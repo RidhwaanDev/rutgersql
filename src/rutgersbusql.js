@@ -1,6 +1,8 @@
-let express = require('express');
-let graphqlHTTP = require('express-graphql');
-let { buildSchema } = require('graphql');
+const express = require('express');
+const chalk = require('chalk');
+const graphqlHTTP = require('express-graphql');
+const { buildSchema } = require('graphql');
+// const root = require('./resolvers');
 const PORT = 8000;
 
 // Initialize a GraphQL schema
@@ -27,17 +29,15 @@ let schema = buildSchema(`
 	}
 
 `);
-
 // resolvers for graphql defined in resolvers.js
-const {getArrivals, getRoutes,getSegments,getVehicles,getStops} = require('./resolvers');
-
-let root = {
-    arrivals : getArrivals,
-    routes : getRoutes,
-    segments : getSegments,
-    vehicles : getVehicles,
-    stops : getStops,
-};
+// const {getArrivals, getRoutes,getSegments,getVehicles,getStops} = require('./resolvers');
+// let root = {
+//     arrivals : getArrivals,
+//     routes : getRoutes,
+//     segments : getSegments,
+//     vehicles : getVehicles,
+//     stops : getStops,
+// };
 
 // Create an express server and a GraphQL endpoint
 let app = express();
@@ -47,5 +47,5 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true,  // Enable GraphiQL when server endpoint is accessed in browser
 }));
 
-app.listen(PORT, () => console.log(`Now browse to localhost:${PORT}/graphql`));
+app.listen(PORT, () => chalk.bgGreen(`Now browse to localhost:${PORT}/graphql`));
 
