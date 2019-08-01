@@ -11,7 +11,7 @@ const schema = buildSchema(`
         expires_in: Int,
         api_latest_version: String,
         generated_on: String,
-        # data: [Route],
+        data: [Route],
         api_version: String
 	}
 
