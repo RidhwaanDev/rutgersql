@@ -22,8 +22,8 @@ const resolvers = {
         return getStops().then((res) => {return res});
     },
 };
-
-function queryAPI(URL, unnest = true){
+// TODO each method should provide the params object with the unnest flag.
+function queryAPI(URL, unnest = true, params){
     return axios.get(URL, {
         headers : config.HEADERS,
         params : {
@@ -74,6 +74,7 @@ function getSegments(){
 function getVehicles(){
     log(chalk.green("getting stops"));
     const URL = config.API_URL + '/vehicles.json';
+    const params = {routes : ""};
     return queryAPI(URL);
 };
 
