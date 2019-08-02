@@ -3,7 +3,8 @@ const config = require('./config');
 const chalk = require('chalk');
 
 const log = console.log;
-// resolver functions for transloc graphql api. Returns an object {} with functions as properties
+// resolver functions for transloc graphql api. Each function returns a promise ( axios.get in queryAPI returns a promise).
+// We call then to get the returned data inside of the promise. idk if that make sense
 const resolvers = {
     routes:  (args,context) => {
         return getRoutes().then((res) => {return res});
@@ -21,7 +22,8 @@ const resolvers = {
         return getStops().then((res) => {return res});
     },
 };
-function queryAPI(URL){
+
+function queryAPI(URL, unnest = true){
     return axios.get(URL, {
         headers : config.HEADERS,
         params : {
@@ -30,11 +32,16 @@ function queryAPI(URL){
         }})
         .then((result) => {
             log(chalk.bgGreen.black('Success'));
-            // un-nest data object.
-            let res = result['data'];
-            let data = (res['data'])['1323'];
-            res['data'] = data;
-            return res;
+            // TODO explain what unnest is
+            if(unnest){
+                let res = result['data'];
+                let data = (res['data'])['1323'];
+                res['data'] = data;
+                log(res);
+                return res;
+            }
+            log(result['data']);
+            return result['data'];
         })
         .catch((error) => {
             // https://gist.github.com/fgilio/230ccd514e9381fafa51608fcf137253
@@ -52,10 +59,11 @@ function queryAPI(URL){
             log(error.config);
         });
 }
+// you can convert these to arrow functions but no point in this case.
 
 function getArrivals(){
     const URL = config.API_URL + '/arrivals.json'
-    queryAPI(URL)
+    return queryAPI(URL);
 };
 
 function getSegments(){
@@ -69,11 +77,13 @@ function getVehicles(){
 };
 
 function getStops(){
+    log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
-    return queryAPI(URL);
+    return queryAPI(URL,false);
 };
 
 function getRoutes(){
+    log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
     return queryAPI(URL);
 }

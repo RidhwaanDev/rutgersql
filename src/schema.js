@@ -1,6 +1,6 @@
 // construct schema file from schema string. Return schema object
 const { buildSchema } = require('graphql');
-const schema = buildSchema(`
+module.exports = buildSchema(`
 
 	type Query {
 		routes : RouteResult,
@@ -36,6 +36,13 @@ const schema = buildSchema(`
 	type Stop {
 		stop_id: String,
 		name : String,
+		routes : [String]
+		location : Position
+	}
+	
+	type Position {
+        lat: Float,
+        lng: Float	
 	}
 `);
-module.exports = schema;
+
