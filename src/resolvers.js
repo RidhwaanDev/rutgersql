@@ -3,7 +3,7 @@ const config = require('./config');
 const chalk = require('chalk');
 
 const log = console.log;
-// resolver functions for transloc graphql api. Each function returns a promise ( axios.get in queryAPI returns a promise).
+// resolver functions for transloc graphql api. Each function returns a promise ( because axios.get in queryAPI returns a promise).
 // We call then to get the returned data inside of the promise. idk if that make sense
 const resolvers = {
     routes:  (args,context) => {
@@ -72,6 +72,7 @@ function getSegments(){
 };
 
 function getVehicles(){
+    log(chalk.green("getting stops"));
     const URL = config.API_URL + '/vehicles.json';
     return queryAPI(URL);
 };
