@@ -5,7 +5,7 @@ module.exports = buildSchema(`
 	type Query {
 		routes : RouteResult,
 		stops : StopResult
-		vehicles(routes: String) : VehiclesResult
+		vehicles(routes: [String]) : VehiclesResult
 	}
 
 	type RouteResult {
@@ -54,7 +54,7 @@ module.exports = buildSchema(`
         expires_in: Int,
         api_latest_version: String,
         generated_on: String,
-        data: [Vehicle],
+        data : [Vehicle],
         api_version: String
 	}
 	
@@ -79,12 +79,12 @@ module.exports = buildSchema(`
         expires_in: Int,
         api_latest_version: String,
         generated_on: String,
-        data: [Stop],
+        data: [ArrivalEst],
         api_version: String
 	}
-	
-	
-	
+    type ArrivalEst {	
+        data : Int 
+    }
 	type Position {
         lat: Float,
         lng: Float	
