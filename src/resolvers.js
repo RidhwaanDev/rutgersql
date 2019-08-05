@@ -16,23 +16,24 @@ const resolvers = {
         return getSegments().then((res) => {return res});
     },
     vehicles:  (args,context) => {
-        return getVehicles().then((res) => {return res});
+        return getVehicles(args).then((res) => {return res});
     },
     stops:  (args,context) => {
         return getStops().then((res) => {return res});
     },
 };
+
 // TODO each method should provide the params object with the unnest flag.
-function queryAPI(URL, unnest = true, params){
+function queryAPI(URL, args, unnest = false){
     return axios.get(URL, {
         headers : config.HEADERS,
         params : {
             'agencies' : '1323',
             'geo_area'  : config.geo_area,
-        }})
+       }})
         .then((result) => {
             log(chalk.bgGreen.black('Success'));
-            // TODO explain what unnest is
+            // Transloc sometimes data : { 1323 : {actual data here }} so we have to get data.1323 to get actual result.
             if(unnest){
                 let res = result['data'];
                 let data = (res['data'])['1323'];
@@ -61,33 +62,33 @@ function queryAPI(URL, unnest = true, params){
 }
 // you can convert these to arrow functions but no point in this case.
 
-function getArrivals(){
+function getArrivals(args){
     const URL = config.API_URL + '/arrivals.json'
     return queryAPI(URL);
 };
 
-function getSegments(){
+function getSegments(args){
     const URL = config.API_URL + '/segments.json';
     return queryAPI(URL);
 };
 
-function getVehicles(){
+function getVehicles(args){
     log(chalk.green("getting stops"));
     const URL = config.API_URL + '/vehicles.json';
-    const params = {routes : ""};
-    return queryAPI(URL);
+    return queryAPI(URL,args,true);
 };
 
-function getStops(){
+function getStops(args){
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
-    return queryAPI(URL,false);
+    return queryAPI(URL,args);
+
 };
 
-function getRoutes(){
+function getRoutes(args){
     log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
-    return queryAPI(URL);
+    return queryAPI(URL,args,true);
 }
 
 module.exports = resolvers;
