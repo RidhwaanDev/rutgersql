@@ -77,7 +77,10 @@ function getSegments(args){
     const URL = config.API_URL + '/segments.json';
     return queryAPI(URL);
 };
-
+function getVehiclesByName(args){
+    getVehicles(args).then((res) => {
+    })
+}
 function getVehicles(args){
     log(chalk.green("getting vehicles"));
     const URL = config.API_URL + '/vehicles.json';
