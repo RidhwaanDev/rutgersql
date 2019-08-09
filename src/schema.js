@@ -6,7 +6,7 @@ module.exports = buildSchema(`
 		routes : RouteResult,
 		stops : StopResult
 		# vehicles(routes: [String]) : VehiclesResult
-		vehiclesByName(routeName: String!) : VehiclesResult
+		vehiclesByName(routeName: String!) : [Vehicle]
 	}
 
 	type RouteResult {

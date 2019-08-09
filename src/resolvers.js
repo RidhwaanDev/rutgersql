@@ -26,9 +26,7 @@ const resolvers = {
         return getStops(args);
     },
     vehiclesByName : (args,context) => {
-        const c = getVehiclesByName(args);
-        log(c);
-        return c;
+        return getVehiclesByName(args);
     },
 };
 
@@ -90,21 +88,25 @@ function getSegments(args){
     return queryAPI(URL).then((res) => {return res});
 };
 
-// resolver that takes the route name like 'A' or 'LX' and gets all the associated vehicles
+// resolver that takes the route name like 'A' or 'LX' and gets all the associated vehicles.
 function getVehiclesByName(args){
+    // get route_name from args
     const route_name = args['routeName'];
-    return getRoutes(null)
+    const result = getRoutes(null)
         .then((response) => {
-            let res = response['data'];
-            let map = {};
+            // get all the routes and map the route id with its name. For example : ( "4040102" : "Route A )
+            const res = response['data'];
+            const map = {};
             res.forEach((it) => {map[it.route_id] = it.long_name});
+            // get all the vehicles and filter the ones where the route_id in map returns the route name that we want.
             return getVehicles(config.route_id_test)
                 .then((response) => {
                     let res = response['data'];
                     return res.filter((it) => map[it.route_id] === route_name);
                 });
+        });
 
-        }).then((vehicles) => {return vehicles});
+    return result.then((vehicles_list) => log(vehicles_list));
 }
 
 function getVehicles(args){
