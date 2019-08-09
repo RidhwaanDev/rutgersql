@@ -77,18 +77,24 @@ function queryAPI(URL, args, unnest = false){
             log(error.config);
         });
 }
+
 // you can convert these to arrow functions but no point in this case.
 function getArrivals(args){
-    const URL = config.API_URL + '/arrivals.json'
-    return queryAPI(URL).then((res) => {return res});
+    const URL = config.API_URL + '/arrival-estimates.json'
+    const my_params = {
+        routes : Object.is(args['routes'], undefined) ? null : args['routes'].join(','),
+        stops : Object.is(args['stops'], undefined) ? null : args['stops'].join(','),
+    };
+    return queryAPI(URL,my_params).then((res) => {return res});
 };
 
+// takes the route_id and returns an array of segments (polyline encodings to used draw PolyLines on Google Maps).
 function getSegments(args){
     const URL = config.API_URL + '/segments.json';
-    return queryAPI(URL).then((res) => {return res});
+    return queryAPI(URL,args).then((res) => {return res});
 };
 
-// resolver that takes the route name like 'A' or 'LX' and gets all the associated vehicles.
+// takes the route name like 'A' or 'LX' and gets all the associated vehicles.
 function getVehiclesByName(args){
     // get route_name from args
     const route_name = args['routeName'];

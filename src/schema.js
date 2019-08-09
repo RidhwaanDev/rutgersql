@@ -4,8 +4,9 @@ module.exports = buildSchema(`
 	type Query {
 		routes : RouteResult,
 		stops : StopResult
-		# vehicles(routes: [String]) : VehiclesResult
+		vehicles(routes: [String]) : VehiclesResult
 		vehiclesByName(routeName: String!) : [Vehicle]
+		arrivals(routes : [String], stops : [String]) : ArrivalEst_Result
 	}
 
 	type RouteResult {
@@ -82,9 +83,20 @@ module.exports = buildSchema(`
         data: [ArrivalEst],
         api_version: String
 	}
+	
     type ArrivalEst {	
-        data : Int 
+        arrivals : [Arrival]
+        agency_id : Int,
+        stop_id : String
     }
+    
+    type Arrival {
+        route_id : String,
+        vehicle_id : String,
+        arrival_at : String,
+        type : String 
+    }
+    
 	type Position {
         lat: Float,
         lng: Float	
