@@ -28,6 +28,9 @@ const resolvers = {
     vehiclesByName : (args,context) => {
         return getVehiclesByName(args);
     },
+    segmentsByName : (args,context) => {
+        return getSegmentsByName(args);
+    },
 };
 
 // base API query. All API requests go through here.
@@ -88,7 +91,25 @@ function getArrivals(args){
     return queryAPI(URL,my_params).then((res) => {return res});
 };
 
-// takes the route_id and returns an array of segments (polyline encodings to draw PolyLines on Google Maps).
+// takes the route name like 'A' or 'LX' and gets the respective segments.
+function getSegmentsByName(args){
+    // get route_name from args
+    const route_name = args['routeName'];
+    log(route_name);
+    const result = getRoutes(null)
+        .then((response) => {
+            log(JSON.stringify(response));
+            const res = response['data'];
+            log(res);
+            const map = {};
+            res.forEach((it) => {map[it.long_name] = it.route_id});
+            const args = {routeName : map[route_name]};
+            return getSegments(map[route_name]);
+        });
+
+    return result.then((vehicles_list) => {return vehicles_list});
+}
+
 function getSegments(args){
     const URL = config.API_URL + '/segments.json';
      return queryAPI(URL,args).then((res) => {
