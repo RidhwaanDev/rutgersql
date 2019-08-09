@@ -1,7 +1,6 @@
 // construct schema file from schema string. Return schema object
 const { buildSchema } = require('graphql');
 module.exports = buildSchema(`
-
 	type Query {
 		routes : RouteResult,
 		stops : StopResult

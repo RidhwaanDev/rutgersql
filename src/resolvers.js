@@ -11,7 +11,7 @@ const log = console.log;
 
 const resolvers = {
     routes:    (args,context) => {
-        return getRoutes();
+       return getRoutes(args);
     },
     arrivals:  (args,context) => {
         return getArrivals(args);
@@ -101,22 +101,19 @@ function getVehiclesByName(args){
             // get all the vehicles and filter the ones where the route_id in map returns the route name that we want.
             return getVehicles(config.route_id_test)
                 .then((response) => {
-                    let res = response['data'];
+                    const res = response['data'];
                     return res.filter((it) => map[it.route_id] === route_name);
                 });
         });
 
-    return result.then((vehicles_list) => log(vehicles_list));
+    return result.then((vehicles_list) => {return vehicles_list});
 }
 
 function getVehicles(args){
     log(chalk.green("getting vehicles"));
     const URL = config.API_URL + '/vehicles.json';
     const my_params  = {
-        /**
-         * See https://stackoverflow.com/questions/5409641/javascript-set-a-variable-if-undefined
-         * if routes is undefined set key as null otherwise join it ( changes it from routes : [a,b,c] to routes : "a,b,c". ( Array -> Single String basically)
-         */
+        // if routes is undefined set key as null otherwise join it ( changes it from routes : [a,b,c] to routes : "a,b,c". ( Array -> Single String basically)
         routes : Object.is(args['routes'], undefined) ? null : args['routes'].join(',')
     };
     return queryAPI(URL,my_params,true).then((res) => {return res});
@@ -125,7 +122,7 @@ function getVehicles(args){
 function getStops(args){
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
-    return queryAPI(URL,args,true);
+    return queryAPI(URL,args);
 
 };
 
