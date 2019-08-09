@@ -7,6 +7,7 @@ module.exports = buildSchema(`
 		vehicles(routes: [String]) : VehiclesResult
 		vehiclesByName(routeName: String!) : [Vehicle]
 		arrivals(routes : [String], stops : [String]) : ArrivalEst_Result
+		segments(route : String!) : SegmentsResult
 	}
 
 	type RouteResult {
@@ -28,7 +29,6 @@ module.exports = buildSchema(`
 		text_color : String,
 		long_name : String,
 		url : String,
-		# segments need to be added
 		is_hidden : Boolean,
 		type : String,
         stops : [String]	
@@ -96,6 +96,15 @@ module.exports = buildSchema(`
         arrival_at : String,
         type : String 
     }
+    
+    type SegmentsResult {
+        rate_limit: Int,
+        expires_in: Int,
+        api_latest_version: String,
+        generated_on: String,
+        data: [String]
+        api_version: String
+    } 
     
 	type Position {
         lat: Float,

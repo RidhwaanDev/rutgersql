@@ -58,7 +58,7 @@ function queryAPI(URL, args, unnest = false){
                 // log(res);
                 return res;
             }
-            log(result['data']);
+           // log(result['data']);
             return result['data'];
         })
         .catch((error) => {
@@ -88,10 +88,18 @@ function getArrivals(args){
     return queryAPI(URL,my_params).then((res) => {return res});
 };
 
-// takes the route_id and returns an array of segments (polyline encodings to used draw PolyLines on Google Maps).
+// takes the route_id and returns an array of segments (polyline encodings to draw PolyLines on Google Maps).
 function getSegments(args){
     const URL = config.API_URL + '/segments.json';
-    return queryAPI(URL,args).then((res) => {return res});
+     return queryAPI(URL,args).then((res) => {
+         let segments = [];
+         let segment_obj = res['data'];
+         Object.keys(segment_obj).forEach((key) => {
+             segments.push(segment_obj[key]);
+         });
+         res['data'] = segments;
+         return res;
+    });
 };
 
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.
