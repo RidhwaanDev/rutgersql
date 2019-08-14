@@ -1,8 +1,10 @@
 const axios = require('axios');
 const config = require('./config');
 const chalk = require('chalk');
+const moment = require('moment');
 
 const log = console.log;
+
 
 /**
  * resolver functions for transloc graphql api.
@@ -10,6 +12,8 @@ const log = console.log;
  */
 
 const resolvers = {
+
+    // normal base queries. Single API call.
     routes:    (args,context) => {
        return getRoutes(args);
     },
@@ -25,12 +29,19 @@ const resolvers = {
     stops:     (args,context) => {
         return getStops(args);
     },
+    // special queries. Multiple API calls to get data.
     vehiclesByName : (args,context) => {
         return getVehiclesByName(args);
     },
     segmentsByName : (args,context) => {
         return getSegmentsByName(args);
     },
+    routesByName: (args,context) => {
+        return getRoutesByName(args);
+    },
+
+     
+
 };
 
 // base API query. All API requests go through here.
@@ -40,7 +51,7 @@ function queryAPI(URL, args, unnest = false){
         'geo_area': config.geo_area,
     };
 
-    // add args into my_params object
+    // put args into my_params object
     if(args != undefined || args != null){
         Object.keys(args).forEach((key,value) => {
             my_params[key] = args[key];
@@ -67,7 +78,6 @@ function queryAPI(URL, args, unnest = false){
         .catch((error) => {
             // https://gist.github.com/fgilio/230ccd514e9381fafa51608fcf137253
             const pf = chalk.bgRed.black;
-            log(pf("ERROR!!!!"));
             if (error.response) {
                 log(error.response.data);
                 log(error.response.status);
@@ -81,7 +91,6 @@ function queryAPI(URL, args, unnest = false){
         });
 }
 
-// you can convert these to arrow functions but no point in this case.
 function getArrivals(args){
     const URL = config.API_URL + '/arrival-estimates.json'
     const my_params = {
@@ -94,7 +103,7 @@ function getArrivals(args){
 // takes the route name like 'A' or 'LX' and gets the respective segments.
 function getSegmentsByName(args){
     // get route_name from args
-    const route_name = args['routeName'];
+    const route_name = args['name'];
     log(route_name);
     const result = getRoutes(null)
         .then((response) => {
@@ -112,6 +121,7 @@ function getSegmentsByName(args){
 
 function getSegments(args){
     const URL = config.API_URL + '/segments.json';
+    const route = args['route'];
      return queryAPI(URL,args).then((res) => {
          let segments = [];
          let segment_obj = res['data'];
@@ -126,7 +136,7 @@ function getSegments(args){
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.
 function getVehiclesByName(args){
     // get route_name from args
-    const route_name = args['routeName'];
+    const route_name = args['name'];
     const result = getRoutes(null)
         .then((response) => {
             // get all the routes and map the route id with its name. For example : ( "4040102" : "Route A )
@@ -143,7 +153,35 @@ function getVehiclesByName(args){
 
     return result.then((vehicles_list) => {return vehicles_list});
 }
+function getRoutesByName(args){
+    const route_result = getRoutes(null)
+    // get routes, then get vehicles then combine to two.
+        .then((response) => {
+            const res = response['data'];
+            const route_obj = res.filter((it) => (it.long_name == args['name']));
+            return vehicle_result = getVehiclesByName(args)
+                .then((vehicles) => {
+                    const agg = null;
+                    // sort the arrivals of each vehicle
+                    vehicles.forEach((vehicle) => {
+                        const arrival_est = vehicle['arrival_estimates'];
+                        arrival_est.sort((a,b) => {
+                            return a['arrival_at'] < b['arrival_at'];
+                        });
+                    });
+                    // get arrivals
+                    const res = vehicles.map(it => it['arrival_estimates'] ).flatMap(it => it);
+                    log(res);
+                    // combine route_obj and response
+                    return {...route_obj,vehicles};
+                });
+        })// add names for each arrival_est stopid
+        .then((response) => {log('')});
+        // add segments
 
+};
+
+//  needs to be unnested
 function getVehicles(args){
     log(chalk.green("getting vehicles"));
     const URL = config.API_URL + '/vehicles.json';
@@ -158,9 +196,9 @@ function getStops(args){
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
     return queryAPI(URL,args);
-
 };
 
+// Needs to be unnested.
 function getRoutes(args){
     log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
