@@ -5,17 +5,15 @@ const moment = require('moment');
 
 const log = console.log;
 
-
 /**
  * resolver functions for transloc graphql api.
  * These are basically the endpoints.
  */
-
 const resolvers = {
 
     // normal base queries. Single API call.
     routes:    (args,context) => {
-       return getRoutes(args);
+        return getRoutes(args);
     },
     arrivals:  (args,context) => {
         return getArrivals(args);
@@ -39,9 +37,9 @@ const resolvers = {
     routesByName: (args,context) => {
         return getRoutesByName(args);
     },
-
-     
-
+    stopsWithRoutes : (args,context) => {
+        return getStopsWithRoutes();
+    },
 };
 
 // base API query. All API requests go through here.
@@ -72,7 +70,7 @@ function queryAPI(URL, args, unnest = false){
                 // log(res);
                 return res;
             }
-           // log(result['data']);
+            // log(result['data']);
             return result['data'];
         })
         .catch((error) => {
@@ -122,14 +120,14 @@ function getSegmentsByName(args){
 function getSegments(args){
     const URL = config.API_URL + '/segments.json';
     const route = args['route'];
-     return queryAPI(URL,args).then((res) => {
-         let segments = [];
-         let segment_obj = res['data'];
-         Object.keys(segment_obj).forEach((key) => {
-             segments.push(segment_obj[key]);
-         });
-         res['data'] = segments;
-         return res;
+    return queryAPI(URL,args).then((res) => {
+        let segments = [];
+        let segment_obj = res['data'];
+        Object.keys(segment_obj).forEach((key) => {
+            segments.push(segment_obj[key]);
+        });
+        res['data'] = segments;
+        return res;
     });
 };
 
@@ -153,6 +151,7 @@ function getVehiclesByName(args){
 
     return result.then((vehicles_list) => {return vehicles_list});
 }
+// ewww
 function getRoutesByName(args){
     const route_result = getRoutes(null)
     // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
@@ -161,7 +160,6 @@ function getRoutesByName(args){
             const route_obj = res.filter((it) => (it.long_name == args['name']));
             return vehicle_result = getVehiclesByName(args)
                 .then((vehicles) => {
-                    const agg = null;
                     // sort the arrivals of each vehicle
                     vehicles.forEach((vehicle) => {
                         const arrival_est = vehicle['arrival_estimates'];
@@ -186,16 +184,39 @@ function getRoutesByName(args){
                     stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
                     response['vehicles'].forEach((vehicle) => {
                         vehicle['arrival_estimates'].forEach((est) => {
-                              est['name'] = stop_id_2_name[est['stop_id']];
+                            est['name'] = stop_id_2_name[est['stop_id']];
                         });
                     });
                     return response;
                 });
 
         })
-        .then((final_result) => {log(JSON.stringify(final_result))});
+        .then(final_result => {return final_result});
 
 };
+
+// ewwwww
+function getStopsWithRoutes(){
+    getVehicles([config.route_id_test, config.route_id_test_2])
+        .then(vehicles_res => {
+            const vehicles = vehicles_res['data'];
+            vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0] });
+            return vehicles
+        })
+        .then(vehicles_sorted => {
+            getStops(null)
+                .then(stop_res => {
+                    const stops = stop_res['data'];
+                    stops.forEach(item => {
+                        item['routes'].forEach(rt => {
+                            log(vehicles_sorted);
+                          const incoming = vehicles_sorted['arrival_estimates'].filter(it => it['stop_id'] === item['stop_id']);
+                          log(incoming);
+                        });
+                    });
+                });
+        });
+}
 
 //  needs to be unnested
 function getVehicles(args){

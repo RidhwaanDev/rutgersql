@@ -10,6 +10,7 @@ module.exports = buildSchema(`
 		vehiclesByName(name: String!) : [Vehicle]
 		segmentsByName(name: String!) : SegmentsResult
 		routesByName(name: String!) : RouteResult
+		stopsWithRoutes : String
 	}
 
 	type RouteResult {
