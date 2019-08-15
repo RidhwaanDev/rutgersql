@@ -1,1 +1,2 @@
-// cache API responses from Transloc with node-cache
+// cache API data from Transloc
+

@@ -155,7 +155,7 @@ function getVehiclesByName(args){
 }
 function getRoutesByName(args){
     const route_result = getRoutes(null)
-    // get routes, then get vehicles then combine to two.
+    // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
         .then((response) => {
             const res = response['data'];
             const route_obj = res.filter((it) => (it.long_name == args['name']));
@@ -169,16 +169,31 @@ function getRoutesByName(args){
                             return a['arrival_at'] < b['arrival_at'];
                         });
                     });
-                    // get arrivals
-                    vehicles.sort((a,b) => {return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0]});
+                    // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
+                    vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0] });
                     // combine route_obj and response
                     const result = {...route_obj, vehicles};
-                    log(result);
                     return result;
                 });
         })
-         // add names for each arrival_est stop_id
-        .then((response) => {log('')});
+        // give each stop_id its stop name.
+        .then((response) => {
+            return getStops(null)
+                .then((stops_response) => {
+                    const stop_id_2_name = {};
+                    // map each stop_id from stops to its name
+                    const stops = stops_response['data'];
+                    stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
+                    response['vehicles'].forEach((vehicle) => {
+                        vehicle['arrival_estimates'].forEach((est) => {
+                              est['name'] = stop_id_2_name[est['stop_id']];
+                        });
+                    });
+                    return response;
+                });
+
+        })
+        .then((final_result) => {log(JSON.stringify(final_result))});
 
 };
 
