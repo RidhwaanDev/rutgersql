@@ -170,14 +170,15 @@ function getRoutesByName(args){
                         });
                     });
                     // get arrivals
-                    const res = vehicles.map(it => it['arrival_estimates'] ).flatMap(it => it);
-                    log(res);
+                    vehicles.sort((a,b) => {return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0]});
                     // combine route_obj and response
-                    return {...route_obj,vehicles};
+                    const result = {...route_obj, vehicles};
+                    log(result);
+                    return result;
                 });
-        })// add names for each arrival_est stopid
+        })
+         // add names for each arrival_est stop_id
         .then((response) => {log('')});
-        // add segments
 
 };
 
