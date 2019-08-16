@@ -195,7 +195,7 @@ function getRoutesByName(args){
 
 };
 
-// ewwwww
+// ewwww
 function getStopsWithRoutes(){
     getVehicles([config.route_id_test, config.route_id_test_2])
         .then(vehicles_res => {
@@ -204,17 +204,45 @@ function getStopsWithRoutes(){
             return vehicles
         })
         .then(vehicles_sorted => {
-            getStops(null)
+            return getStops(null)
                 .then(stop_res => {
                     const stops = stop_res['data'];
-                    stops.forEach(item => {
-                        item['routes'].forEach(rt => {
-                            log(vehicles_sorted);
-                          const incoming = vehicles_sorted['arrival_estimates'].filter(it => it['stop_id'] === item['stop_id']);
-                          log(incoming);
+                    const stop_id_to_name = {};
+                    const stop_id_to_vehicle = {};
+
+                    stops.forEach(s => {stop_id_to_name[s['stop_id']] = s['name']});
+
+                    vehicles_sorted.forEach(v => {
+                        const arrivals = v['arrival_estimates'];
+                        arrivals.forEach(a => {
+                            const vcpy = Object.assign({},v);
+                            vcpy['stop_arrival_time'] = a['arrival_at'];
+                            vcpy['stop_name'] = stop_id_to_name[a['stop_id']];
+                            stop_id_to_vehicle[a['stop_id']] = vcpy;
                         });
                     });
+                    return {stop_id_to_vehicle, stops };
                 });
+        })
+        .then(stop_id_to_vehicle_and_all_stops=> {
+            const {stop_id_to_vehicle, stops} = stop_id_to_vehicle_and_all_stops;
+            log(stop_id_to_vehicle);
+            stops.forEach(stop => {
+                stop['vehicle'] = [];
+                Object.keys(stop_id_to_vehicle).forEach((key,value) => {
+                    if(key === stop['stop_id']){
+                        stop['vehicle'].push(stop_id_to_vehicle[key]);
+                    }
+                });
+                stop['vehicle'].sort((a,b) => {
+                    return a['stop_arrival_time'] < b['stop_arrival_time'];
+                })
+            });
+            return stops;
+        })
+        .then(final_stops => {
+            // any final processing can be done
+            return final_stops;
         });
 }
 
