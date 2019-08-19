@@ -1,4 +1,6 @@
 // construct schema file from schema string. Return schema object
+
+// the indentation is off here but looks fine in WebStorm. idk how to fix.
 const { buildSchema } = require('graphql');
 module.exports = buildSchema(`
 	type Query {
