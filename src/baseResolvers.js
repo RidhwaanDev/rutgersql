@@ -1,0 +1,1 @@
+// base resolvers that are the same as the API requests on openapi: https://rapidapi.com/transloc/api/openapi-1-2?7
