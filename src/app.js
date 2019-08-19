@@ -15,6 +15,5 @@ app.use('/', graphqlHTTP({
 }));
 
 module.exports = app;
-// app.listen(PORT, () => log(chalk.green(`Now browse to localhost:${PORT}/graphql`)));
 
 

@@ -90,13 +90,13 @@ function queryAPI(URL, args, unnest = false){
 }
 
 function getArrivals(args){
-    const URL = config.API_URL + '/arrival-estimates.json'
+    const URL = config.API_URL + '/arrival-estimates.json';
     const my_params = {
         routes : Object.is(args['routes'], undefined) ? null : args['routes'].join(','),
         stops : Object.is(args['stops'], undefined) ? null : args['stops'].join(','),
     };
     return queryAPI(URL,my_params).then((res) => {return res});
-};
+}
 
 // takes the route name like 'A' or 'LX' and gets the respective segments.
 function getSegmentsByName(args){
@@ -129,7 +129,7 @@ function getSegments(args){
         res['data'] = segments;
         return res;
     });
-};
+}
 
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.
 function getVehiclesByName(args){
@@ -149,9 +149,9 @@ function getVehiclesByName(args){
                 });
         });
 
-    return result.then((vehicles_list) => {return vehicles_list});
+    return result.then(vehicles_list => {return vehicles_list});
 }
-// ewww
+
 function getRoutesByName(args){
     const route_result = getRoutes(null)
     // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
@@ -191,13 +191,20 @@ function getRoutesByName(args){
                 });
 
         })
-        .then(final_result => {return final_result});
+        .then(final_result => {
+            // combine the route object and the vehicles object
+            // segments is useless in this case
+            delete (final_result['0'])['segments'];
+            let vehicles = final_result['vehicles'];
+            return { ...final_result['0'],vehicles};
+        });
+    return route_result.then(res => {return res});
 
-};
-
-// ewwww
+}
+// all the routes that stop at that stop.
+// from all of those routes, get all the vehicles and sort by the arrival time to that stop.
 function getStopsWithRoutes(){
-    getVehicles([config.route_id_test, config.route_id_test_2])
+    const stopsWithRoutes = getVehicles([config.route_id_test, config.route_id_test_2])
         .then(vehicles_res => {
             const vehicles = vehicles_res['data'];
             vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0] });
@@ -244,6 +251,7 @@ function getStopsWithRoutes(){
             // any final processing can be done
             return final_stops;
         });
+    return stopsWithRoutes.then(res => {return res});
 }
 
 //  needs to be unnested
@@ -254,20 +262,20 @@ function getVehicles(args){
         // if routes is undefined set key as null otherwise join it ( changes it from routes : [a,b,c] to routes : "a,b,c". ( Array -> Single String basically)
         routes : Object.is(args['routes'], undefined) ? null : args['routes'].join(',')
     };
-    return queryAPI(URL,my_params,true).then((res) => {return res});
-};
+    return queryAPI(URL,my_params,true).then(res => {return res});
+}
 
 function getStops(args){
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
-    return queryAPI(URL,args);
-};
+    return queryAPI(URL,args).then(res => {return res});
+}
 
 // Needs to be unnested.
 function getRoutes(args){
     log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
-    return queryAPI(URL,args,true).then((res) => {return res});
+    return queryAPI(URL,args,true).then(res => { return res});
 }
 
 module.exports = resolvers;
