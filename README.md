@@ -2,6 +2,7 @@
  A GraphQL API for Rutgers Bus
 ## How to access the server
  Server is located at : [https://zjq1aw68ij.execute-api.us-east-1.amazonaws.com/alpha](https://zjq1aw68ij.execute-api.us-east-1.amazonaws.com/alpha) 
+
 This opens up the Graphiql browser interface where you can test queries. 
 
 ##  Usage example
