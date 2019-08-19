@@ -37,13 +37,13 @@ stops {
 ```
 query {
 stops {
-	data {
-		name
-		location {
-			lat
-			lng
-		}
-	}
+  data {
+     name
+     location {
+     	lat
+     	lng
+     }
+}
 ```
 ### routes with all buses
 ```
@@ -107,7 +107,7 @@ query {
           speed
           route_id
           location {
-			lat
+	    lat
             lng
           }
         }
@@ -165,7 +165,7 @@ query {
     heading
     location {
 	    lat
-		lng
+	    lng
 	  }
 }
 ```
