@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const moment = require('moment');
 
 const log = console.log;
-
+console.log(process.env.API_KY);
 /**
  * resolver functions for transloc graphql api.
  * These are basically the endpoints.
