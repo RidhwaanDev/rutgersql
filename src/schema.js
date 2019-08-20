@@ -12,10 +12,24 @@ module.exports = buildSchema(`
 		vehiclesByName(name: String!) : [Vehicle]
 		segmentsByName(name: String!) : SegmentsResult
 		routesByName(name: String!) : RoutesByNameResult 
-		stopsWithRoutes : String
+		stopsWithRoutes : [StopsWithRoutesResult]
+	}
+	type StopsWithRoutesResult {
+       code : String,
+       description : String,
+       url : String,
+       parent_Station_id : String,
+       agency_ids : [String],
+       station_id : String,
+       location_type : String,
+       location : Position,
+       stop_id : String,
+       routes : [String],
+       name : String,
+       vehicle_arrivals : [Vehicle]
 	}
     type RoutesByNameResult {
-        vehicles : [Vehicle]
+        vehicles : [Vehicle],
 	    description : String,
 	    short_name : String,
 		route_id : String,

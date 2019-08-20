@@ -38,7 +38,7 @@ const resolvers = {
         return getRoutesByName(args);
     },
     stopsWithRoutes : (args,context) => {
-        return getStopsWithRoutes();
+        return getStopsWithRoutes(args);
     },
 };
 
@@ -98,7 +98,7 @@ function getArrivals(args){
     return queryAPI(URL,my_params).then((res) => {return res});
 }
 
-// takes the route name like 'A' or 'LX' and gets the respective segments.
+// takes the route name like 'A' or 'LX' and gets the segments.
 function getSegmentsByName(args){
     // get route_name from args
     const route_name = args['name'];
@@ -151,10 +151,10 @@ function getVehiclesByName(args){
 
     return result.then(vehicles_list => {return vehicles_list});
 }
-
+// get the real segments and put into routes
+// get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
 function getRoutesByName(args){
     const route_result = getRoutes(null)
-    // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
         .then((response) => {
             const res = response['data'];
             const route_obj = res.filter((it) => (it.long_name == args['name']));
@@ -192,20 +192,95 @@ function getRoutesByName(args){
 
         })
         .then(final_result => {
-            // combine the route object and the vehicles object
-            // segments is useless in this case
+            // segments is useless in this case and clutters the JSON output.
             delete (final_result['0'])['segments'];
             let vehicles = final_result['vehicles'];
+            // combine the route object and the vehicles object
             return { ...final_result['0'],vehicles};
         });
     return route_result.then(res => {return res});
 
 }
-// all the routes that stop at that stop.
-// from all of those routes, get all the vehicles and sort by the arrival time to that stop.
+
+// First get all the routes that stop at that stop.
+// Then from all of those routes, get all the vehicles and sort by the arrival time to that stop.
 function getStopsWithRoutes(){
+    /**
+     *  get all stops [stops]
+     *  get all routes [routes]
+     *  get all vehicles [vehicles]
+     *  for each stop s in [stops] , find the routes coming to it [routeids]
+     *  for each vehicle v in [vehicles] filter out all vehicles except the routeid r in [routeids]
+     *  find all the arrival_estimates with stop_id equal to s.stop_id. if found, add v to a stop object.
+     *
+     */
+
+        // get all stops
+    const res = getStops(null)
+            .then(stops => {
+                return stops;
+            })
+            .then(stops => {
+                return getRoutes(null).then(routes => {
+                    const combined = {stops,routes};
+                    return combined;
+                });
+            })
+            .then(stops_routes => {
+                return getVehicles([config.route_id_test,config.route_id_test_2]).then(vehicles => {
+                    const combined = {vehicles,...stops_routes};
+                    return combined;
+                });
+            })
+            .then(combined => {
+                // combined has all routes, all stops, and all vehicles.
+                const routes = (combined['routes'])['data'];
+                const stops = (combined['stops'])['data'];
+                const vehicles = (combined['vehicles'])['data'];
+                // r u ready for some O(n^3) magic ?!?!
+                // map of each stop to the routes the stop is on
+                let stopid_to_routeid = {};
+                stops.forEach(s => {
+                    routes.forEach(r => {
+                        const route_stops = r['stops'];
+                        const rt_name = r['long_name'];
+                        const filtered = route_stops.filter(stop => stop === s['stop_id']);
+                        //  stop is on the route
+                        if(filtered.length >= 1){
+                            if(stopid_to_routeid[s['stop_id']] == undefined){
+                                stopid_to_routeid[s['stop_id']] = new Array();
+                            } else {
+                                (stopid_to_routeid[s['stop_id']]).push(r['route_id']);
+                            }
+                        }
+                    });
+                });
+                // for each stop
+                Object.keys(stopid_to_routeid).forEach( stop_id => {
+                    const buses = vehicles.filter(b => stopid_to_routeid[stop_id].includes(b['route_id']));
+                    // buses is all the vehicles coming to the stop.
+                    buses.sort((a,b) => {
+                        return (a['arrival_estimates'])['arrival_at'] < (b['arrival_estimates'])['arrival_at']
+                    });
+                    stopid_to_routeid[stop_id] = buses;
+                });
+                // now add all buses to their respective stops in the stops object
+                stops.forEach(stop => {
+                    stop['vehicle_arrivals'] = stopid_to_routeid[stop['stop_id']];
+                });
+                return stops;
+            });
+
+    log(res);
+    return res;
+
+}
+
+// defunct. maybe has some future use?
+function getStopsWithRoutesMaybe(){
     const stopsWithRoutes = getVehicles([config.route_id_test, config.route_id_test_2])
         .then(vehicles_res => {
+            // get all vehicles and sort them by their arrival times.
             const vehicles = vehicles_res['data'];
             vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0] });
             return vehicles
@@ -216,7 +291,7 @@ function getStopsWithRoutes(){
                     const stops = stop_res['data'];
                     const stop_id_to_name = {};
                     const stop_id_to_vehicle = {};
-
+                    // map each stop_id to stop_name. We will use this later for a lookup
                     stops.forEach(s => {stop_id_to_name[s['stop_id']] = s['name']});
 
                     vehicles_sorted.forEach(v => {
@@ -232,6 +307,8 @@ function getStopsWithRoutes(){
                 });
         })
         .then(stop_id_to_vehicle_and_all_stops=> {
+            // here we will add a 'vehicle' key to the stop object.
+            // this key will contain all the vehicles coming to that stop sorted by shortest arrival time
             const {stop_id_to_vehicle, stops} = stop_id_to_vehicle_and_all_stops;
             log(stop_id_to_vehicle);
             stops.forEach(stop => {
@@ -248,10 +325,18 @@ function getStopsWithRoutes(){
             return stops;
         })
         .then(final_stops => {
-            // any final processing can be done
+            // convert from array to an object ( From this -> "[ {}, {} ,{} ]" to this -> "{ {}, {}, {}, }" )
+            final_stops.reduce((obj, item) => {
+                obj[item['name']] = item;
+                return obj;
+            });
+
+            // for(let i = 0; i < 10; i++){
+            //     log(final_stops[i]);
+            // }
             return final_stops;
         });
-    return stopsWithRoutes.then(res => {return res});
+    return stopsWithRoutes.then(res => {log(res)});
 }
 
 //  needs to be unnested
