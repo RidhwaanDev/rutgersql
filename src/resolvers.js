@@ -55,7 +55,7 @@ function queryAPI(URL, args, unnest = false){
             my_params[key] = args[key];
         });
     }
-
+    log(my_params);
     return axios.get(URL, {
         headers : config.HEADERS,
         params : my_params,
@@ -102,24 +102,20 @@ function getArrivals(args){
 function getSegmentsByName(args){
     // get route_name from args
     const route_name = args['name'];
-    log(route_name);
     const result = getRoutes(null)
         .then((response) => {
-            log(JSON.stringify(response));
             const res = response['data'];
-            log(res);
             const map = {};
             res.forEach((it) => {map[it.long_name] = it.route_id});
-            const args = {routeName : map[route_name]};
-            return getSegments(map[route_name]);
+            const params = {routes: map[route_name]};
+            return getSegments(params);
         });
 
-    return result.then((vehicles_list) => {return vehicles_list});
+    return result.then((segments) => {return segments});
 }
 
 function getSegments(args){
     const URL = config.API_URL + '/segments.json';
-    const route = args['route'];
     return queryAPI(URL,args).then((res) => {
         let segments = [];
         let segment_obj = res['data'];
@@ -214,7 +210,6 @@ function getStopsWithRoutes(){
      *  find all the arrival_estimates with stop_id equal to s.stop_id. if found, add v to a stop object.
      *
      */
-
         // get all stops
     const res = getStops(null)
             .then(stops => {
@@ -238,7 +233,7 @@ function getStopsWithRoutes(){
                 const stops = (combined['stops'])['data'];
                 const vehicles = (combined['vehicles'])['data'];
                 // r u ready for some O(n^3) magic ?!?!
-                // map of each stop to the routes the stop is on
+                // map each stop to its routes
                 let stopid_to_routeid = {};
                 stops.forEach(s => {
                     routes.forEach(r => {
@@ -270,10 +265,7 @@ function getStopsWithRoutes(){
                 });
                 return stops;
             });
-
-    log(res);
-    return res;
-
+    return res.then(final_res => {return final_res});
 }
 
 // defunct. maybe has some future use?

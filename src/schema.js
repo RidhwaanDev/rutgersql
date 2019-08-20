@@ -14,6 +14,7 @@ module.exports = buildSchema(`
 		routesByName(name: String!) : RoutesByNameResult 
 		stopsWithRoutes : [StopsWithRoutesResult]
 	}
+	
 	type StopsWithRoutesResult {
        code : String,
        description : String,
@@ -28,6 +29,7 @@ module.exports = buildSchema(`
        name : String,
        vehicle_arrivals : [Vehicle]
 	}
+	
     type RoutesByNameResult {
         vehicles : [Vehicle],
 	    description : String,
@@ -101,15 +103,22 @@ module.exports = buildSchema(`
         description : String,
         last_updated_on: String,
         call_name : String,
+        name : String,
         speed : Float,
         vehicle_id : String,
         segment_id : String,
         passenger_load : Float,
         route_id : String,
-        # arrival_estimates
+        arrival_estimates : [VehicleArrivalEst]
         tracking_status: String,
         location : Position,
         heading : Int  
+	}
+	
+	type VehicleArrivalEst {
+	    route_id : String,
+	    arrival_at : String,
+	    stop_id : String
 	}
 	
 	type ArrivalEst_Result {
