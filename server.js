@@ -1,4 +1,4 @@
-require('dotenv').config();
+// this is used for local testing. ( i.e. node server.js )
 const app = require('./src/app');
 const port = 1337;
 app.listen(
