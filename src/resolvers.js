@@ -88,7 +88,6 @@ function queryAPI(URL, args, unnest = false){
             log(error.config);
         });
 }
-
 function getArrivals(args){
     const URL = config.API_URL + '/arrival-estimates.json';
     const my_params = {

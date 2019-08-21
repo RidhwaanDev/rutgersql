@@ -11,7 +11,7 @@ module.exports = {
       */
      HEADERS: {
           'X-RapidAPI-Host': 'transloc-api-1-2.p.rapidapi.com',
-          'X-RapidAPI-Key': process.env.API_KEY,
+          'X-RapidAPI-Key':'hHcLr1qWHDmshwibREtIrhryL9bcp1Fw9AQjsnCiZyEzRrJKOS',
      }
 };
 
