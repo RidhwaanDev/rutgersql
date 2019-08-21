@@ -1,17 +1,115 @@
 # rutgersql
  A GraphQL API for Rutgers Bus
 ## How to access the server
- Server is located at : [https://zjq1aw68ij.execute-api.us-east-1.amazonaws.com/alpha](https://zjq1aw68ij.execute-api.us-east-1.amazonaws.com/alpha) 
+Server is located at [server](https://qb5gf6uh4c.execute-api.us-east-1.amazonaws.com/dev/query) 
 
 This opens up the Graphiql browser interface where you can test queries. 
+## Run locally 
+```
+git clone https://github.com/RidhwaanDev/rutgersql.git
+npm i
+node server.js
+```
+##### Remember to place your  X-RapidAPI-Key in  [config.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/config.js) 
 
 ##  Usage example
-*NOTE: Paste each query into the Graphiql browser interface to see the result.* 
+#### *NOTE: Paste each query into the Graphiql browser interface to see the result.* 
 
-The best way to figure out how to make queries is to look at [schema.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/schema.js) 
+The best way to figure out how to make queries and what to expect in the result is to look at [schema.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/schema.js) 
 Your query should match the schema.
 
-Here are a few examples. These do not cover all the endpoints.
+### all query types
+Below are all the possible queries you can make
+```
+routes : RouteResult,
+stops : StopResult
+arrivals(routes : [String], stops : [String])
+vehicles(routes: [String]) 
+segments(route : String!) 
+vehiclesByName(name: String!) 
+segmentsByName(name: String!) 
+routesByName(name: String!) 
+stopsWithRoutes
+```
+Info about the brackets and exclamation
+```
+String -> single string ( can be omitted )
+[String] -> array of strings
+String! -> must pass in a string ( can't be omitted )
+```
+pass in parameters like this:
+```
+vehiclesByName(name:"Summer 1"){...}
+```
+See example queries below
+
+### stops with all the incoming vehicles for that stop:
+```
+query {
+  stopsWithRoutes {
+    code
+    description
+    url
+    parent_Station_id
+    station_id
+    location_type
+    stop_id
+    name
+    vehicle_arrivals {
+      standing_capacity
+      description
+      last_updated_on
+      call_name
+      name
+      speed
+      vehicle_id
+      segment_id
+      passenger_load
+      route_id
+      tracking_status
+      heading
+    }
+  }
+}
+```
+### routes by name with all vehicles and segments for that route
+```
+query {
+routesByName(name:"Summer 2") {
+  description
+  short_name
+  route_id
+  color
+  is_active
+  agency_id
+  text_color
+  long_name
+  url
+  is_hidden
+  type
+  vehicles {
+    standing_capacity
+    description
+    last_updated_on
+    call_name
+    name
+    speed
+    vehicle_id
+    segment_id
+    passenger_load
+    route_id
+    tracking_status
+    heading
+    arrival_estimates {
+      route_id
+      arrival_at
+      stop_id
+     }
+   }
+   segments 
+  }
+}
+```
 
 ### stops:
 ```
@@ -146,9 +244,7 @@ query {
 ```
 The other end points are pretty much the same.
 
-### How about passing parameters?
-
-Get buses by name
+### Get buses by name
 ```
 query {
   vehiclesByName(name:"Summer 1") {
@@ -169,7 +265,7 @@ query {
 	  }
 }
 ```
-routes by name ( with less info )
+### routes by name ( with less info )
 
 ```
 query{
