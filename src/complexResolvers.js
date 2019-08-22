@@ -1,6 +1,8 @@
 const config = require('./config');
-const chalk = require('chalk');
-const queryAPI = require('./network')
+const {Position, distance} = require('./position');
+// const chalk = require('chalk');
+// const queryAPI = require('./network')
+const log = console.log;
 
 const {getStops, getRoutes, getSegments, getVehicles} = require('./baseResolvers');
 
@@ -18,8 +20,29 @@ const complexResolvers = {
     stopsWithRoutes : (args,context) => {
         return getStopsWithRoutes(args);
     },
+    nearbyStops : (args,context) => {
+        return getNearbyStops(args);
+    },
 };
+// take in lat,lng and returns the nearest stops
+function getNearbyStops(args){
+    // ths location of the person
+    const userPos = new Position(args['lat1'],args['lon1']);
+    return getStops(null)
+        .then(res => {
+            const stops = res['data'];
 
+            stops.forEach(it => {
+                const stop_distance = distance(userPos, new Position(it.location.lat, it.location.lng));
+                it['distance'] = stop_distance;
+            });
+
+            stops.sort((a,b) => {
+                return a['distance'] - b['distance']
+            });
+            return stops;
+        });
+}
 // takes the route name like 'A' or 'LX' and gets the segments.
 function getSegmentsByName(args){
     // get route_name from args
@@ -169,7 +192,7 @@ function getStopsWithRoutes(){
                 });
                 // now add all buses to their respective stops in the stops object
                 stops.forEach(stop => {
-                    stop['vehicle_arrivals'] = stopid_to_routeid[stop['stop_id']];
+                    stop['vehicles'] = stopid_to_routeid[stop['stop_id']];
                 });
                 return stops;
             });

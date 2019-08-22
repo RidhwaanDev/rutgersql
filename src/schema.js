@@ -13,6 +13,7 @@ module.exports = buildSchema(`
 		segmentsByName(name: String!) : SegmentsResult
 		routesByName(name: String!) : RoutesByNameResult 
 		stopsWithRoutes : [StopsWithRoutesResult]
+		nearbyStops(lat1 : Float!, lon1: Float!) : [Stop] 
 	}
 	
 	type StopsWithRoutesResult {
@@ -27,7 +28,7 @@ module.exports = buildSchema(`
        stop_id : String,
        routes : [String],
        name : String,
-       vehicle_arrivals : [Vehicle]
+       vehicles : [Vehicle]
 	}
 	
     type RoutesByNameResult {
