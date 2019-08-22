@@ -1,10 +1,9 @@
-// base resolvers that are the same as the API requests on openapi: https://rapidapi.com/transloc/api/openapi-1-2?7
+// base resolvers that match the API requests on openapi: https://rapidapi.com/transloc/api/openapi-1-2?7
 const config = require('./config');
 const chalk = require('chalk');
 const queryAPI = require('./network')
 const log = console.log;
 const baseResolvers = {
-
     // normal base queries. Single API call.
     routes:    (args,context) => {
         return getRoutes(args);
@@ -61,18 +60,11 @@ function getSegments(args){
 }
 
 
-function getSegments(args){
-    const URL = config.API_URL + '/segments.json';
-    return queryAPI(URL,args).then((res) => {
-        let segments = [];
-        let segment_obj = res['data'];
-        Object.keys(segment_obj).forEach((key) => {
-            segments.push(segment_obj[key]);
-        });
-        res['data'] = segments;
-        return res;
-    });
-}
+module.exports = {
+ baseResolvers,
+ getStops,
+ getSegments,
+ getRoutes,
+ getVehicles,
 
-
-module.exports = baseResolvers;
+};

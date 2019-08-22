@@ -1,6 +1,7 @@
 const express = require('express');
 const chalk = require('chalk'); // fun colors for the terminal.
 const graphqlHTTP = require('express-graphql');
+
 const schema = require('./schema');
 const root = require('./resolvers');
 

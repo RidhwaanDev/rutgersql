@@ -1,8 +1,8 @@
 const config = require('./config');
 const chalk = require('chalk');
 const queryAPI = require('./network')
-const baseResolvers = require('./baseResolvers');
 
+const {getStops, getRoutes, getSegments, getVehicles} = require('./baseResolvers');
 
 // complex resolvers that call the API multiple time times to do fancy stuff. Depends on baseResolvers
 const complexResolvers = {
@@ -19,6 +19,7 @@ const complexResolvers = {
         return getStopsWithRoutes(args);
     },
 };
+
 // takes the route name like 'A' or 'LX' and gets the segments.
 function getSegmentsByName(args){
     // get route_name from args
@@ -55,7 +56,6 @@ function getVehiclesByName(args){
 
     return result.then(vehicles_list => {return vehicles_list});
 }
-// get the real segments and put into routes
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
 function getRoutesByName(args){
     const route_result = getRoutes(null)
@@ -174,69 +174,6 @@ function getStopsWithRoutes(){
                 return stops;
             });
     return res.then(final_res => {return final_res});
-}
-
-// defunct. maybe has some future use?
-function getStopsWithRoutesMaybe(){
-    const stopsWithRoutes = getVehicles([config.route_id_test, config.route_id_test_2])
-        .then(vehicles_res => {
-            // get all vehicles and sort them by their arrival times.
-            const vehicles = vehicles_res['data'];
-            vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0] });
-            return vehicles
-        })
-        .then(vehicles_sorted => {
-            return getStops(null)
-                .then(stop_res => {
-                    const stops = stop_res['data'];
-                    const stop_id_to_name = {};
-                    const stop_id_to_vehicle = {};
-                    // map each stop_id to stop_name. We will use this later for a lookup
-                    stops.forEach(s => {stop_id_to_name[s['stop_id']] = s['name']});
-
-                    vehicles_sorted.forEach(v => {
-                        const arrivals = v['arrival_estimates'];
-                        arrivals.forEach(a => {
-                            const vcpy = Object.assign({},v);
-                            vcpy['stop_arrival_time'] = a['arrival_at'];
-                            vcpy['stop_name'] = stop_id_to_name[a['stop_id']];
-                            stop_id_to_vehicle[a['stop_id']] = vcpy;
-                        });
-                    });
-                    return {stop_id_to_vehicle, stops };
-                });
-        })
-        .then(stop_id_to_vehicle_and_all_stops=> {
-            // here we will add a 'vehicle' key to the stop object.
-            // this key will contain all the vehicles coming to that stop sorted by shortest arrival time
-            const {stop_id_to_vehicle, stops} = stop_id_to_vehicle_and_all_stops;
-            log(stop_id_to_vehicle);
-            stops.forEach(stop => {
-                stop['vehicle'] = [];
-                Object.keys(stop_id_to_vehicle).forEach((key,value) => {
-                    if(key === stop['stop_id']){
-                        stop['vehicle'].push(stop_id_to_vehicle[key]);
-                    }
-                });
-                stop['vehicle'].sort((a,b) => {
-                    return a['stop_arrival_time'] < b['stop_arrival_time'];
-                })
-            });
-            return stops;
-        })
-        .then(final_stops => {
-            // convert from array to an object ( From this -> "[ {}, {} ,{} ]" to this -> "{ {}, {}, {}, }" )
-            final_stops.reduce((obj, item) => {
-                obj[item['name']] = item;
-                return obj;
-            });
-
-            // for(let i = 0; i < 10; i++){
-            //     log(final_stops[i]);
-            // }
-            return final_stops;
-        });
-    return stopsWithRoutes.then(res => {log(res)});
 }
 
 module.exports = complexResolvers;

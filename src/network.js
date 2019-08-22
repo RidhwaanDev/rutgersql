@@ -1,11 +1,15 @@
-// network requests using axios. All API calls / resolvers go through these
+// network requests using axios. All API calls / DynamoDB queries are done through here.
 const axios = require('axios');
 const config = require('./config');
 const chalk = require('chalk'); // fun colors for the terminal.
 
 const log = console.log;
 
-
+// query Amazon DB
+const queryDB = () => {
+    
+}
+// query Transloc API
 function queryAPI(URL, args, unnest = false){
     let my_params = {
         'agencies': '1323',
@@ -18,7 +22,7 @@ function queryAPI(URL, args, unnest = false){
             my_params[key] = args[key];
         });
     }
-    log(my_params);
+
     return axios.get(URL, {
         headers : config.HEADERS,
         params : my_params,
