@@ -21,8 +21,8 @@ function Cache(checkPeriod, deleteOnExpire, errorOnMissing) {
         });
     };
 
-    this.get = (value) => {
-        myCache.get("myKey", (err, value) => {
+    this.get = (key) => {
+        myCache.get(key, (err, value) => {
             if (err) {
                 return;
             }
