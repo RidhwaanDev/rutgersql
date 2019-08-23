@@ -15,11 +15,12 @@ functions:
     events:
       - http:
           path: query
-          method: post
+          method: any
   querytest:
     handler: handler.query
     events:
       - http:
           path: querytest
-          method: get
+          method: any
+          cors: true
 
