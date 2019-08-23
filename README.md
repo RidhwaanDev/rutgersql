@@ -5,6 +5,9 @@ Server is located at [url](https://qb5gf6uh4c.execute-api.us-east-1.amazonaws.co
 
 This opens up the Graphiql browser interface where you can test queries. 
 ## Run locally 
+
+[app.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/app.js) is the entry point for the application.
+
 ```
 git clone https://github.com/RidhwaanDev/rutgersql.git
 npm i
