@@ -11,10 +11,10 @@ const NodeCache = require( "node-cache" );
 
 const log = console.log;
 
-function Cache(checkPeriod, deleteOnExpire, errorOnMissing) {
+module.exports.Cache = function Cache(checkPeriod, deleteOnExpire, errorOnMissing) {
     const myCache = new NodeCache();
-    this.store = (obj) => {
-        myCache.set("myKey", obj, (err, success) => {
+    this.store = (key,obj) => {
+        myCache.set(key, obj, (err, success) => {
             if (!err && success) {
                 log(success);
             }
@@ -32,8 +32,12 @@ function Cache(checkPeriod, deleteOnExpire, errorOnMissing) {
             }
         });
     };
-}
-module.exports = Cache;
+
+    this.flush = () => {
+        myCache.flushAll();
+        myCache.close();
+    }
+};
 
 
 

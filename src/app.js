@@ -4,8 +4,9 @@ const graphqlHTTP = require('express-graphql');
 
 const schema = require('./schema');
 const root = require('./resolvers');
+const Cache = require('./cache');
+const nwtCache = new Cache();
 
-const PORT = 8000;
 const log = console.log;
 
 const app = express();
