@@ -30,6 +30,8 @@ vehiclesByName(name: String!)
 segmentsByName(name: String!) 
 routesByName(name: String!) 
 stopsWithRoutes
+nearbyStops(lat1 : Float!, lon1: Float!) : [Stop] 
+
 ```
 Info about the brackets and exclamation
 ```
