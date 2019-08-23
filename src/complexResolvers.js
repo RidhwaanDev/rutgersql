@@ -31,15 +31,16 @@ function getNearbyStops(args){
     return getStops(null)
         .then(res => {
             const stops = res['data'];
-
+            // add distance to each stop object
             stops.forEach(it => {
                 const stop_distance = distance(userPos, new Position(it.location.lat, it.location.lng));
                 it['distance'] = stop_distance;
             });
-
+            // then sort all the objects by distance
             stops.sort((a,b) => {
                 return a['distance'] - b['distance']
             });
+
             return stops;
         });
 }
@@ -79,6 +80,7 @@ function getVehiclesByName(args){
 
     return result.then(vehicles_list => {return vehicles_list});
 }
+
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
 function getRoutesByName(args){
     const route_result = getRoutes(null)
@@ -91,11 +93,11 @@ function getRoutesByName(args){
                     vehicles.forEach((vehicle) => {
                         const arrival_est = vehicle['arrival_estimates'];
                         arrival_est.sort((a,b) => {
-                            return a['arrival_at'] < b['arrival_at'];
+                            return a['arrival_at'] - b['arrival_at'];
                         });
                     });
                     // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
-                    vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] < (b['arrival_estimates'])[0] });
+                    vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0] });
                     // combine route_obj and response
                     const result = {...route_obj, vehicles};
                     return result;
@@ -186,7 +188,7 @@ function getStopsWithRoutes(){
                     const buses = vehicles.filter(b => stopid_to_routeid[stop_id].includes(b['route_id']));
                     // buses is all the vehicles coming to the stop.
                     buses.sort((a,b) => {
-                        return (a['arrival_estimates'])['arrival_at'] < (b['arrival_estimates'])['arrival_at']
+                        return (a['arrival_estimates'])['arrival_at'] - (b['arrival_estimates'])['arrival_at']
                     });
                     stopid_to_routeid[stop_id] = buses;
                 });

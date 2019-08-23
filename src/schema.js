@@ -15,7 +15,7 @@ module.exports = buildSchema(`
 		stopsWithRoutes : [StopsWithRoutesResult]
 		nearbyStops(lat1 : Float!, lon1: Float!) : [Stop] 
 	}
-	
+    	
 	type StopsWithRoutesResult {
        code : String,
        description : String,
@@ -30,6 +30,7 @@ module.exports = buildSchema(`
        name : String,
        vehicles : [Vehicle]
 	}
+	
 	
     type RoutesByNameResult {
         vehicles : [Vehicle],

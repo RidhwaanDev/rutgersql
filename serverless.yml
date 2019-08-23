@@ -16,3 +16,10 @@ functions:
       - http:
           path: query
           method: post
+  querytest:
+    handler: handler.query
+    events:
+      - http:
+          path: querytest
+          method: get
+
