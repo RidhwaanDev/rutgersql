@@ -28,7 +28,7 @@ module.exports.distance = (pos1, pos2) => {
     //if (unit == "K")
     dist = dist * 1.609344;
     // if (unit == "N")
-    dist = dist * 0.8684;
+    // dist = dist * 0.8684;
 
     return dist;
 
