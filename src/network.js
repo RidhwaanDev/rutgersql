@@ -8,7 +8,7 @@ const log = console.log;
 // query Amazon DB
 const queryDB = () => {
     
-}
+};
 // query Transloc API
 function queryAPI(URL, args, unnest = false){
     let my_params = {

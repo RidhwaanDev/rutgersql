@@ -16,6 +16,7 @@ functions:
       - http:
           path: query
           method: any
+          cors: true
   querytest:
     handler: handler.query
     events:
