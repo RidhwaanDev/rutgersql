@@ -49,16 +49,15 @@ function getNearbyStops(args){
 function getSegmentsByName(args){
     // get route_name from args
     const route_name = args['name'];
-    const result = getRoutes(null)
+    return getRoutes(null)
         .then((response) => {
             const res = response['data'];
             const map = {};
             res.forEach((it) => {map[it.long_name] = it.route_id});
-            const params = {routes: map[route_name], callback : 'call'};
+            const params = {routes: map[route_name]};
             return getSegments(params);
-        });
-    return result.then((segments) => {
-        log(segments);
+        })
+        .then((segments) => {
         return segments;
     });
 }

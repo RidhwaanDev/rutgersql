@@ -7,23 +7,35 @@ const log = console.log;
 
 // query Amazon DB
 const queryDB = () => {
-    
+
 };
 // query Transloc API
 function queryAPI(URL, args, unnest = false){
     let my_params = {
         'agencies': '1323',
-        // for some reason segments does not work correctly when you pass in a geoarea
-        'geo_area': URL.includes("/segments.json") ? null : config.geo_area,
     };
 
+    if(!URL.includes("segments")){
+        my_params['geo_area']  = config.geo_area;
+    } else {
+        delete my_params['geo_area'];
+        my_params['callback'] = 'call';
 
+    }
     // put args into my_params object
     if(args != undefined || args != null){
         Object.keys(args).forEach((key,value) => {
             my_params[key] = args[key];
         });
     }
+
+    // intercept the request before it is sent. useful for debugging
+    axios.interceptors.request.use(config =>{
+        const final_request_url = axios.getUri(config);
+        return config;
+    }, error => {
+        return Promise.reject(error);
+    });
 
     return axios.get(URL, {
         headers : config.HEADERS,
@@ -36,10 +48,10 @@ function queryAPI(URL, args, unnest = false){
                 let res = result['data'];
                 let data = (res['data'])['1323'];
                 res['data'] = data;
-                // log(res);
+                //log(res);
                 return res;
             }
-            // log(result['data']);
+           // log(result['data']);
             return result['data'];
         })
         .catch((error) => {
@@ -59,6 +71,3 @@ function queryAPI(URL, args, unnest = false){
 }
 
 module.exports = queryAPI;
-
-
-
