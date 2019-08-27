@@ -13,7 +13,8 @@ const queryDB = () => {
 function queryAPI(URL, args, unnest = false){
     let my_params = {
         'agencies': '1323',
-        'geo_area': config.geo_area,
+        // for some reason segments does not work correctly when you pass in a geoarea
+        'geo_area': URL.contains("segments.json") ? null : config.geo_area,
     };
 
     // put args into my_params object

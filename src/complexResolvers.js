@@ -44,6 +44,7 @@ function getNearbyStops(args){
             return stops;
         });
 }
+
 // takes the route name like 'A' or 'LX' and gets the segments.
 function getSegmentsByName(args){
     // get route_name from args

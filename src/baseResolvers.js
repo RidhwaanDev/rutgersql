@@ -59,12 +59,10 @@ function getSegments(args){
     });
 }
 
-
 module.exports = {
  baseResolvers,
  getStops,
  getSegments,
  getRoutes,
  getVehicles,
-
 };
