@@ -65,4 +65,5 @@ module.exports = {
  getSegments,
  getRoutes,
  getVehicles,
+
 };

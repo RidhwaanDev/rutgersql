@@ -16,11 +16,10 @@ function queryAPI(URL, args, unnest = false){
     };
 
     if(!URL.includes("segments")){
-        my_params['geo_area']  = config.geo_area;
+        my_params['geo_area'] = config.geo_area;
     } else {
         delete my_params['geo_area'];
         my_params['callback'] = 'call';
-
     }
     // put args into my_params object
     if(args != undefined || args != null){
@@ -28,14 +27,17 @@ function queryAPI(URL, args, unnest = false){
             my_params[key] = args[key];
         });
     }
-
+    log(args);
     // intercept the request before it is sent. useful for debugging
     axios.interceptors.request.use(config =>{
         const final_request_url = axios.getUri(config);
+        log(final_request_url);
+        log(config);
         return config;
     }, error => {
         return Promise.reject(error);
     });
+
 
     return axios.get(URL, {
         headers : config.HEADERS,
@@ -48,10 +50,11 @@ function queryAPI(URL, args, unnest = false){
                 let res = result['data'];
                 let data = (res['data'])['1323'];
                 res['data'] = data;
+                log(typeof(result));
                 //log(res);
                 return res;
             }
-           // log(result['data']);
+            log(result['data']);
             return result['data'];
         })
         .catch((error) => {

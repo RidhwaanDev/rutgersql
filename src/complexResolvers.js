@@ -58,6 +58,7 @@ function getSegmentsByName(args){
             return getSegments(params);
         })
         .then((segments) => {
+            log(typeof segments);
         return segments;
     });
 }
