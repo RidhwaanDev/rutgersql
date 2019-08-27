@@ -54,11 +54,13 @@ function getSegmentsByName(args){
             const res = response['data'];
             const map = {};
             res.forEach((it) => {map[it.long_name] = it.route_id});
-            const params = {routes: map[route_name]};
+            const params = {routes: map[route_name], callback : 'call'};
             return getSegments(params);
         });
-
-    return result.then((segments) => {return segments});
+    return result.then((segments) => {
+        log(segments);
+        return segments;
+    });
 }
 
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.

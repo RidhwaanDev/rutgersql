@@ -14,8 +14,9 @@ function queryAPI(URL, args, unnest = false){
     let my_params = {
         'agencies': '1323',
         // for some reason segments does not work correctly when you pass in a geoarea
-        'geo_area': URL.contains("segments.json") ? null : config.geo_area,
+        'geo_area': URL.includes("/segments.json") ? null : config.geo_area,
     };
+
 
     // put args into my_params object
     if(args != undefined || args != null){
