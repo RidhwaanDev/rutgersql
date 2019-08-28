@@ -1,21 +1,34 @@
 // network requests using axios. All API calls / DynamoDB queries are done through here.
 const axios = require('axios');
+const https = require('https');
+const request = require('request');
 const config = require('./config');
 const chalk = require('chalk'); // fun colors for the terminal.
 
 const log = console.log;
 
 // query Amazon DB
-const queryDB = () => {
-
+const callSegments = () => {
+    request('https://transloc-api-1-2.p.rapidapi.com/segments.json?agencies=1323&callback=call&routes=4012630', {
+        headers : {
+            'X-RapidAPI-Host': 'transloc-api-1-2.p.rapidapi.com',
+            'X-RapidAPI-Key':'hHcLr1qWHDmshwibREtIrhryL9bcp1Fw9AQjsnCiZyEzRrJKOS', // prob should do something abt this
+        }
+    },(err,res,body) => {
+        if(err){return log(err)}
+        log(body);
+    })
 };
 
 // query Transloc API
 function queryAPI(URL, args, unnest = false){
+    callSegments();
     let my_params = {
         'agencies': '1323',
     };
     let segments = false;
+    // segments endpoint does not work with geo_area.
+    //TODO geoarea is not the problem
     if(!URL.includes("segments")){
         my_params['geo_area'] = config.geo_area;
     } else {
@@ -37,25 +50,31 @@ function queryAPI(URL, args, unnest = false){
         return Promise.reject(error);
     });
 
-    return axios.get(URL, {
-        headers : config.HEADERS,
-        responseType : 'arraybuffer',
-        transformResponse : undefined,
-        params : my_params,
-    })
+    // configure our network request
+    const axios_config = {};
+    axios_config.headers = config.HEADERS;
+    axios_config.params = my_params;
+    // if(segments){
+    //     log('adding semgment confit');
+    //     axios_config.responseType = 'arraybuffer';
+    //     axios_config.transformResponse = undefined;
+    // }
+    return axios.get(URL,axios_config)
         .then((result) => {
             log(chalk.green('Success'));
-            let b = new Buffer(result.data,'binary');
-            log(b.toString());
+            // if(segments){
+            //     const b = new Buffer(result.data,'binary');
+            //     const str = b.toString();
+            //     const js = JSON.parse(JSON.stringify(str));
+            //     log(js);
+            // }
             // Transloc sometimes returns "data : { 1323 : {actual data here }}" so we have to unwrap 1323 to get real data.
             if(unnest){
                 let res = result['data'];
                 let data = (res['data'])['1323'];
                 res['data'] = data;
-                //log(res);
                 return res;
             }
-            // log(result['data']);
             return result['data'];
         })
         .catch((error) => {

@@ -150,10 +150,13 @@ module.exports = buildSchema(`
         expires_in: Int,
         api_latest_version: String,
         generated_on: String,
-        data: [String]
+        data: [SSegment],
         api_version: String
     } 
-    
+    type SSegment {
+        key: String
+        value: String    
+    } 
     
 	type Position {
         lat: Float,
