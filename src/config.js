@@ -12,6 +12,11 @@ module.exports = {
      HEADERS: {
           'X-RapidAPI-Host': 'transloc-api-1-2.p.rapidapi.com',
           'X-RapidAPI-Key':'hHcLr1qWHDmshwibREtIrhryL9bcp1Fw9AQjsnCiZyEzRrJKOS', // prob should do something abt this 
+     },
+     HEADERS_RAW : {
+          'X-RapidAPI-Host': 'transloc-api-1-2.p.rapidapi.com',
+          'X-RapidAPI-Key':'hHcLr1qWHDmshwibREtIrhryL9bcp1Fw9AQjsnCiZyEzRrJKOS', // prob should do something abt this
+          'Content-Type': 'text/plain'
      }
 };
 

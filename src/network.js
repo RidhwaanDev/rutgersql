@@ -9,15 +9,17 @@ const log = console.log;
 const queryDB = () => {
 
 };
+
 // query Transloc API
 function queryAPI(URL, args, unnest = false){
     let my_params = {
         'agencies': '1323',
     };
-
+    let segments = false;
     if(!URL.includes("segments")){
         my_params['geo_area'] = config.geo_area;
     } else {
+        segments = true;
         delete my_params['geo_area'];
         my_params['callback'] = 'call';
     }
@@ -27,38 +29,38 @@ function queryAPI(URL, args, unnest = false){
             my_params[key] = args[key];
         });
     }
-    log(args);
     // intercept the request before it is sent. useful for debugging
     axios.interceptors.request.use(config =>{
         const final_request_url = axios.getUri(config);
-        log(final_request_url);
-        log(config);
         return config;
     }, error => {
         return Promise.reject(error);
     });
 
-
     return axios.get(URL, {
         headers : config.HEADERS,
+        responseType : 'arraybuffer',
+        transformResponse : undefined,
         params : my_params,
     })
         .then((result) => {
             log(chalk.green('Success'));
+            let b = new Buffer(result.data,'binary');
+            log(b.toString());
             // Transloc sometimes returns "data : { 1323 : {actual data here }}" so we have to unwrap 1323 to get real data.
             if(unnest){
                 let res = result['data'];
                 let data = (res['data'])['1323'];
                 res['data'] = data;
-                log(typeof(result));
                 //log(res);
                 return res;
             }
-            log(result['data']);
+            // log(result['data']);
             return result['data'];
         })
         .catch((error) => {
             // https://gist.github.com/fgilio/230ccd514e9381fafa51608fcf137253
+            log(chalk.red('Error'));
             const pf = chalk.bgRed.black;
             if (error.response) {
                 log(error.response.data);
