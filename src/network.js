@@ -12,15 +12,32 @@ const cleanSegmentsResult = result => {
 
     // replace each 9 digit number (the keys to each segment) with a random key. 
     // This prevents JSON.parse from sorting the keys and messing with the segments
+    const result_sorted = JSON.parse(str);
+    log(result_sorted);
+    let i = 0;
+    Object.keys(result_sorted['data']).forEach(key => {
+       i++;
+    });
+
+    log(`There are ${i} amount of keys in sorted segments object`);
+    let key_cnt = 0;
     let prev = str;
     let running_str = '';
     while(prev.match(regexp) != null){
-        const rand_i = Math.floor(Math.random() * 128);
-        running_str = prev.replace(regexp,`\"key${rand_i}\"`);
+        running_str = prev.replace(regexp,`\"segment${key_cnt}\"`);
         prev = running_str;
+        key_cnt++;
     }
-    const final_segments = JSON.parse(running_str)
-    return final_segments;     
+    let j = 0;
+    const final_segments = JSON.parse(running_str);
+    Object.keys(final_segments).forEach(key => {
+        j++;
+    });
+
+    log(`There are ${i} amount of keys in cleaned segments object`);
+
+    log(final_segments);
+    return final_segments;
 }
 
 // query Transloc API
