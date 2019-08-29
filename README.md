@@ -302,7 +302,4 @@ routesByName(name:"Summer 2") {
 
 
 ## Todo
-- refactor the code base
-- separate the code into modules
-- document the code better
-- cache data
+- Use es6 like the cool kids
