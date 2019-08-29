@@ -13,7 +13,7 @@ This opens up the Graphiql browser interface where you can test queries.
 ```
 git clone https://github.com/RidhwaanDev/rutgersql.git
 npm i
-node server.js
+npm start
 ```
 ##### Remember to place your  X-RapidAPI-Key in  [config.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/config.js) 
 
