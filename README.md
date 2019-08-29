@@ -1,5 +1,7 @@
 # rutgersql
- A GraphQL API for Rutgers Bus
+A GraphQL API for Rutgers Bus.
+
+Backend for [Flutter client](https://github.com/mattweil/rutgers-flutter)
 ## How to access the server
 Server is located at [url](https://qb5gf6uh4c.execute-api.us-east-1.amazonaws.com/dev/query) 
 
