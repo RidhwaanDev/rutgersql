@@ -15,7 +15,9 @@ node server.js
 ```
 ##### Remember to place your  X-RapidAPI-Key in  [config.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/config.js) 
 
-To get a X-RapidAPI-Key go to this link [url](https://rapidapi.com/transloc/api/openapi-1-2) and log in/sign up for an API_KEY. To test the endpoints on transloc the agency_id for Rutgers is 1323 and the geo_area for New Brunswick is "40.506831,-74.456645|15000"
+To get an X-RapidAPI-Key go to this link [url](https://rapidapi.com/transloc/api/openapi-1-2) and log in/sign up for an API_KEY.
+
+To test the endpoints on transloc the agency_id for Rutgers is 1323 and the geo_area for New Brunswick is "40.506831,-74.456645|15000"
 
 ##  Usage example
 #### *NOTE: Paste each query into the Graphiql browser interface to see the result.* 
