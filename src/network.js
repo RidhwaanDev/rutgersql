@@ -1,29 +1,31 @@
 // network requests using axios. All API calls / DynamoDB queries are done through here.
 const axios = require('axios');
-const https = require('https');
-const request = require('request');
 const config = require('./config');
 const chalk = require('chalk'); // fun colors for the terminal.
 
 const log = console.log;
 
-// query Amazon DB
-const callSegments = () => {
-    request('https://transloc-api-1-2.p.rapidapi.com/segments.json?agencies=1323&callback=call&routes=4012630', {
-        headers : {
-            'X-RapidAPI-Host': 'transloc-api-1-2.p.rapidapi.com',
-            'X-RapidAPI-Key':'hHcLr1qWHDmshwibREtIrhryL9bcp1Fw9AQjsnCiZyEzRrJKOS', // prob should do something abt this
-        }
-    },(err,res,body) => {
-        if(err){return log(err)}
-        log(body);
-    })
-};
+const cleanSegmentsResult = result => {
+    const b = new Buffer(result.data,'binary');
+    const str = b.toString();
+    const regexp = /"(\d{9})"/;
+
+    // replace each 9 digit number (the keys to each segment) with a random key. 
+    // This prevents JSON.parse from sorting the keys and messing with the segments
+    let prev = str;
+    let running_str = '';
+    while(prev.match(regexp) != null){
+        const rand_i = Math.floor(Math.random() * 128);
+        running_str = prev.replace(regexp,`\"key${rand_i}\"`);
+        prev = running_str;
+    }
+    const final_segments = JSON.parse(running_str)
+    return final_segments;     
+}
 
 // query Transloc API
 function queryAPI(URL, args, unnest = false){
-    callSegments();
-    let my_params = {
+     let my_params = {
         'agencies': '1323',
     };
     let segments = false;
@@ -54,20 +56,17 @@ function queryAPI(URL, args, unnest = false){
     const axios_config = {};
     axios_config.headers = config.HEADERS;
     axios_config.params = my_params;
-    // if(segments){
-    //     log('adding semgment confit');
-    //     axios_config.responseType = 'arraybuffer';
-    //     axios_config.transformResponse = undefined;
-    // }
+    if(segments){
+        log('adding semgment confit');
+        axios_config.responseType = 'arraybuffer';
+        axios_config.transformResponse = undefined;
+    }
     return axios.get(URL,axios_config)
         .then((result) => {
             log(chalk.green('Success'));
-            // if(segments){
-            //     const b = new Buffer(result.data,'binary');
-            //     const str = b.toString();
-            //     const js = JSON.parse(JSON.stringify(str));
-            //     log(js);
-            // }
+            if(segments){
+                return cleanSegmentsResult(result);
+            }
             // Transloc sometimes returns "data : { 1323 : {actual data here }}" so we have to unwrap 1323 to get real data.
             if(unnest){
                 let res = result['data'];
