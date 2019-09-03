@@ -1,19 +1,19 @@
-const express = require('express');
-const chalk = require('chalk'); // fun colors for the terminal.
-const graphqlHTTP = require('express-graphql');
+import express from 'express'
+import chalk from 'chalk'
+import graphqlHTTP from "express-graphql";
+import schema from './schema'
+import root from './resolvers'
+import cache from './cache'
 
-const schema = require('./schema');
-const root = require('./resolvers');
-const c = require('./cache');
 const log = console.log;
-
-const app = express();
+export const app = express();
 app.use('/', graphqlHTTP({
     schema: schema,  // Must be provided
     rootValue: root,
     graphiql: true,  // Enable GraphiQL when server endpoint is accessed in browser
 }));
 
-module.exports = app;
+export default app;
+
 
 

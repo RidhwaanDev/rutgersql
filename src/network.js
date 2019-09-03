@@ -12,6 +12,8 @@ const cleanSegmentsResult = result => {
 
     // replace each 9 digit number (the keys to each segment) with a random key. 
     // This prevents JSON.parse from sorting the keys and messing with the segments
+
+    // count the keys in the sorted/messed up object
     const result_sorted = JSON.parse(str);
     log(result_sorted);
     let i = 0;
@@ -19,6 +21,7 @@ const cleanSegmentsResult = result => {
        i++;
     });
 
+    // do regex replace with "key" + key_cnt on each instance of the key
     log(`There are ${i} amount of keys in sorted segments object`);
     let key_cnt = 0;
     let prev = str;
@@ -28,6 +31,7 @@ const cleanSegmentsResult = result => {
         prev = running_str;
         key_cnt++;
     }
+    // compare keys in the unsorted/cleaned object
     let j = 0;
     const final_segments = JSON.parse(running_str);
     Object.keys(final_segments).forEach(key => {
@@ -38,7 +42,7 @@ const cleanSegmentsResult = result => {
 
     log(final_segments);
     return final_segments;
-}
+};
 
 // query Transloc API
 function queryAPI(URL, args, unnest = false){
