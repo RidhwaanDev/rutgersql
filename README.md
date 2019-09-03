@@ -1,5 +1,7 @@
 # rutgersql
- A GraphQL API for Rutgers Bus
+A GraphQL API for Rutgers Bus.
+
+Backend for [rutgers-flutter](https://github.com/mattweil/rutgers-flutter)
 ## How to access the server
 Server is located at [url](https://qb5gf6uh4c.execute-api.us-east-1.amazonaws.com/dev/query) 
 
@@ -11,7 +13,7 @@ This opens up the Graphiql browser interface where you can test queries.
 ```
 git clone https://github.com/RidhwaanDev/rutgersql.git
 npm i
-node server.js
+npm start
 ```
 ##### Remember to place your  X-RapidAPI-Key in  [config.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/config.js) 
 
@@ -300,7 +302,4 @@ routesByName(name:"Summer 2") {
 
 
 ## Todo
-- refactor the code base
-- separate the code into modules
-- document the code better
-- cache data
+- Use es6 like the cool kids
