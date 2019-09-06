@@ -45,6 +45,10 @@ function getRoutes(args){
     return queryAPI(URL,args,true).then(res => { return res});
 }
 
+function getArrivals(args){
+    const URL = config.API_URL + '/arrival-estimates.json'
+    // TODO get all the arrivals
+}
 
 function getSegments(args){
     const URL = config.API_URL + '/segments.json';
