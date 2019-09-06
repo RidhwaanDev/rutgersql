@@ -1,10 +1,10 @@
-module.exports = class Position {
-    constructor(){
+class Position {
+    constructor(lat,lng){
        this.lat = lat;
        this.lng = lng;
     }
 
-    distance(pos1,pos2){
+    static distance(pos1,pos2){
         const lat1 = pos1.lat;
         const lon1 = pos1.lng;
         const lat2 = pos2.lat;
@@ -34,3 +34,4 @@ module.exports = class Position {
 
 };
 
+module.exports = {Position};
