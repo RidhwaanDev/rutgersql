@@ -1,7 +1,5 @@
 const config = require('./config');
-const Position = require('./position').default;
-// const chalk = require('chalk');
-// const queryAPI = require('./network')
+const Position = require('./position');
 const log = console.log;
 
 const {getStops, getRoutes, getSegments, getVehicles} = require('./baseResolvers');
@@ -35,7 +33,7 @@ function getNearbyStops(args){
             // add distance to each stop object
             stops.forEach(it => {
                 const stopPos = new Position(it.location.lat, it.location.lng);
-                const stop_distance = distance(userPos, stopPos);
+                const stop_distance = Position.distance(userPos, stopPos);
                 it['distance'] = stop_distance;
             });
             // then sort all the objects by distance

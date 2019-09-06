@@ -1,4 +1,4 @@
-class Position {
+module.exports = class position{
     constructor(lat,lng){
        this.lat = lat;
        this.lng = lng;
@@ -33,5 +33,3 @@ class Position {
     }
 
 };
-
-module.exports = {Position};
