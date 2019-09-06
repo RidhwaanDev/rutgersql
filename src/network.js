@@ -4,7 +4,9 @@ const config = require('./config');
 const chalk = require('chalk'); // fun colors for the terminal.
 
 const log = console.log;
-
+// When using axios to call the segments API the result is sorted based on the keys of each segment since each key is a number.
+// This is bad because when we draw the segments we want the segments to be in the original order so it can be drawn properly.
+// Here we get the raw string from the segments API, replace each key with a some "key" and a number, then call JSON.parse, then return it
 const cleanSegmentsResult = result => {
     const b = new Buffer(result.data,'binary');
     const str = b.toString();
