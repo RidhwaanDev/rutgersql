@@ -25,7 +25,6 @@ const complexResolvers = {
 // take in lat,lng and returns the nearest stops
 function getNearbyStops(args){
     // ths location of the person
-    // todo fix Position usage
     const userPos = new Position(args['lat1'],args['lon1']);
     return getStops(null)
         .then(res => {
