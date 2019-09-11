@@ -50,14 +50,16 @@ function getNearbyStops(args){
                     routes.add(rts[i]);
                 }
             });
-            let routes_args = "";
 
-
+            let temp = [];
+            routes.forEach(it => temp.push(it));
+            const str = temp.join(',');
+            log(str);
 
             // now call arrival estimates with all the routes for only ten stops.
-            // getArrivals({routes, stops : (stops[i])['stop_id']}).then(res => {
-            //     log(res);
-            // });
+            getArrivals({str , stops : (stops[i])['stop_id']}).then(res => {
+                log(res);
+            });
 
             return stops;
         });
