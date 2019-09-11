@@ -2,7 +2,7 @@ const config = require('./config');
 const Position = require('./position');
 const log = console.log;
 
-const {getStops, getRoutes, getSegments, getVehicles} = require('./baseResolvers');
+const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./baseResolvers');
 
 // complex resolvers that call the API multiple time times to do fancy stuff. Depends on baseResolvers
 const complexResolvers = {
@@ -25,7 +25,6 @@ const complexResolvers = {
 // take in lat,lng and returns the nearest stops
 function getNearbyStops(args){
     // ths location of the person
-    // todo fix Position usage
     const userPos = new Position(args['lat1'],args['lon1']);
     return getStops(null)
         .then(res => {
@@ -40,11 +39,26 @@ function getNearbyStops(args){
             stops.sort((a,b) => {
                 return a['distance'] - b['distance']
             });
-            // add arrivals to each stop
-            const arrivals =
-            stops.forEach(it => {
 
+            // all the routes that each stop has. Set instead of array because we dont want duplicate elements
+            let routes = new Set();
+
+            // add each stops' routes to the routes obj
+            stops.forEach(stop =>{
+                const rts = stop['routes'];
+                for(let i = 0; i < rts.length; i++){
+                    routes.add(rts[i]);
+                }
             });
+            let routes_args = "";
+
+
+
+            // now call arrival estimates with all the routes for only ten stops.
+            // getArrivals({routes, stops : (stops[i])['stop_id']}).then(res => {
+            //     log(res);
+            // });
+
             return stops;
         });
 }

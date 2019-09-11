@@ -6,7 +6,7 @@ module.exports = buildSchema(`
 	type Query {
 		routes : RouteResult,
 		stops : StopResult
-		arrivals(routes : [String], stops : [String]) : ArrivalEst_Result
+		arrivals(routes : [String]!, stops : [String]!) : ArrivalEst_Result
 		vehicles(routes: [String]) : VehiclesResult
 		segments(route : String!) : SegmentsResult
 		vehiclesByName(name: String!) : [Vehicle]

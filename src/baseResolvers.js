@@ -32,6 +32,8 @@ function getVehicles(args){
     return queryAPI(URL,my_params,true).then(res => {return res});
 }
 
+
+
 function getStops(args){
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
@@ -46,8 +48,8 @@ function getRoutes(args){
 }
 
 function getArrivals(args){
-    const URL = config.API_URL + '/arrival-estimates.json'
-    // TODO get all the arrivals
+    const URL = config.API_URL + '/arrival-estimates.json';
+    return queryAPI(URL,args).then(res => {return res});
 }
 
 function getSegments(args){
@@ -69,5 +71,5 @@ module.exports = {
  getSegments,
  getRoutes,
  getVehicles,
-
+ getArrivals,
 };
