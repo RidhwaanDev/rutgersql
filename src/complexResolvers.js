@@ -54,12 +54,14 @@ function getNearbyStops(args){
             let temp = [];
             routes.forEach(it => temp.push(it));
             const str = temp.join(',');
-            log(str);
 
             // now call arrival estimates with all the routes for only ten stops.
-            getArrivals({str , stops : (stops[i])['stop_id']}).then(res => {
-                log(res);
-            });
+            for (let i = 0; i < 10; i++) {
+                getArrivals({str, stops: (stops[i])['stop_id']}).then(res => {
+                    stops[i].arrivals = res.data[0].arrivals;
+                    log(stops[i]);
+                });
+            }
 
             return stops;
         });
@@ -78,8 +80,8 @@ function getSegmentsByName(args){
             return getSegments(params);
         })
         .then((segments) => {
-        return segments;
-    });
+            return segments;
+        });
 }
 
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.

@@ -89,7 +89,7 @@ module.exports = buildSchema(`
 		name : String,
 		routes : [String],
 		location : Position,
-		arrivals : [String]
+		arrivals : [Arrival]
 	}	
 	
 	type VehiclesResult {
