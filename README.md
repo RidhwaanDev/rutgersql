@@ -66,7 +66,7 @@ query {
     location_type
     stop_id
     name
-    vehicle_arrivals {
+    vehicles {
       standing_capacity
       description
       last_updated_on
