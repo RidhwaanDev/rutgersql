@@ -116,7 +116,12 @@ function queryAPI(URL, args, unnest = false){
         });
 }
 // query google maps API
-function queryMapsAPI(){
+function queryMapsAPI(endpoint,params){
+    const url = config.GMAP_API_URL + endpoint;
+    let params = {
+        key : api
+    }
+
 
 }
 
