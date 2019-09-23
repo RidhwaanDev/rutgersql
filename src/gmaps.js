@@ -1,7 +1,3 @@
-const googleMapsClient = require('@google/maps').createClient({
-    key:'AIzaSyBG5HdtAIB3OV-jC37XmrrgnW4T2Leep8E'
-});
-
 // class to interact with Map data
 module.exports = class Map {
 
@@ -19,6 +15,5 @@ module.exports = class Map {
     static getRutgersBuilding(){
 
     }
-
 
 };
