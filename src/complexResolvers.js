@@ -7,7 +7,7 @@ const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./
 // complex resolvers that call the API multiple time times to do fancy stuff. Depends on baseResolvers
 const complexResolvers = {
     vehiclesByName : (args,context) => {
-        return getVehiclesByName(args);
+         return getVehiclesByName(args);
     },
     segmentsByName : (args,context) => {
         return getSegmentsByName(args);

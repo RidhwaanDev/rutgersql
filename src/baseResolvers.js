@@ -1,7 +1,7 @@
 // base resolvers that match the API requests on openapi: https://rapidapi.com/transloc/api/openapi-1-2?7
 const config = require('./config');
 const chalk = require('chalk');
-const queryAPI = require('./network')
+const {queryAPI,queryMapsAPI} = require('./network');
 const log = console.log;
 const baseResolvers = {
     // normal base queries. Single API call.
@@ -42,9 +42,10 @@ function getStops(args){
 
 // Needs to be unnested.
 function getRoutes(args){
-    log(chalk.magenta("getting routes"));
-    const URL = config.API_URL + '/routes.json';
-    return queryAPI(URL,args,true).then(res => { return res});
+     queryMapsAPI('/distancematrix',{origins:'41.43206,-81.38992|-33.86748,151.20699'});
+    // log(chalk.magenta("getting routes"));
+    // const URL = config.API_URL + '/routes.json';
+    // return queryAPI(URL,args,true).then(res => { return res});
 }
 
 function getArrivals(args){

@@ -116,17 +116,37 @@ function queryAPI(URL, args, unnest = false){
         });
 }
 // query google maps API
-function queryMapsAPI(endpoint,params){
+function queryMapsAPI(endpoint,args){
     const url = config.GMAP_API_URL + endpoint;
     let params = {
-        key : api
+        key : config.GMAP_API_KEY
+    };
+
+    if(args != undefined || args != null){
+        Object.keys(args).forEach((key,value) => {
+            params[key] = args[key];
+        });
     }
 
+    axios.interceptors.request.use(config =>{
+        const final_request_url = axios.getUri(config);
+        log(final_request_url);
+        return config;
+    }, error => {
+        return Promise.reject(error);
+    });
 
+    axios.get(url,params)
+        .then(result => {
+            log(result);
+        });
 }
 
 function queryRutgersPlacesAPI(){
 
 }
 
-module.exports = queryAPI;
+module.exports = {
+    queryAPI,
+    queryMapsAPI,
+};

@@ -14,16 +14,9 @@ module.exports = buildSchema(`
 		routesByName(name: String!) : RoutesByNameResult 
 		stopsWithRoutes : [StopsWithRoutesResult]
 		nearbyStops(lat1 : Float!, lon1: Float!) : [Stop] 
-		directions(user_lat: Float!, user_lng: Float!, dest_lat: Float!, dest_lng: Float!) : [DirectionResult]
+        # directions(user_lat: Float!, user_lng: Float!, dest_lat: Float!, dest_lng: Float!) : [DirectionResult]
 	}
     
-    type DirectionsResult { 
-         
-    }
-    
-    type Direction {
-         
-    }
     	
 	type StopsWithRoutesResult {
        code : String,
