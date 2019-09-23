@@ -115,5 +115,13 @@ function queryAPI(URL, args, unnest = false){
             log(error.config);
         });
 }
+// query google maps API
+function queryMapsAPI(){
+
+}
+
+function queryRutgersPlacesAPI(){
+
+}
 
 module.exports = queryAPI;
