@@ -117,17 +117,25 @@ function queryAPI(URL, args, unnest = false){
 }
 // query google maps API
 function queryMapsAPI(endpoint,args){
-    const url = config.GMAP_API_URL + endpoint;
-    let params = {
-        key : config.GMAP_API_KEY
-    };
+    const url = config.GMAP_API_URL;
+    const axios_config = {};
+    let params = {};
 
-    if(args != undefined || args != null){
-        Object.keys(args).forEach((key,value) => {
-            params[key] = args[key];
-        });
-    }
+    // add args into params
+    // if(args != undefined || args != null){
+    //     Object.keys(args).forEach((key,value) => {
+    //         params[key] = args[key];
+    //     });
+    // }
 
+    // add Google Map API key to params.
+    params.units = "imperial";
+    params.origins = "Washington,DC";
+    params.destinations = "New York City,NY";
+    params.key = config.GMAP_API_KEY;
+
+    // add params and headers to config obj
+    axios_config.params = params;
     axios.interceptors.request.use(config =>{
         const final_request_url = axios.getUri(config);
         log(final_request_url);
@@ -136,10 +144,8 @@ function queryMapsAPI(endpoint,args){
         return Promise.reject(error);
     });
 
-    axios.get(url,params)
-        .then(result => {
-            log(result);
-        });
+    axios.get(url,axios_config)
+         .then((res) => {log(res)})
 }
 
 function queryRutgersPlacesAPI(){

@@ -15,7 +15,7 @@ module.exports = {
      },
 
      RUTGERS_PLACES_API_URL: 'https://myapps.rutgers.edu/myr-services/RUBuildings/search/mdb/new%20brunswick',
-     GMAP_API_URL : 'http://maps.googleapis.com/maps/api',
+     GMAP_API_URL : 'https://maps.googleapis.com/maps/api/distancematrix/json',
      GMAP_API_KEY: 'AIzaSyBG5HdtAIB3OV-jC37XmrrgnW4T2Leep8E',
 };
 

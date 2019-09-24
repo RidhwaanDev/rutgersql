@@ -23,8 +23,6 @@ const complexResolvers = {
     },
 };
 
-
-
 // take in lat,lng and returns the nearest stops
 function getNearbyStops(args){
     // ths location of the person
@@ -227,6 +225,7 @@ function getStopsWithRoutes(){
             });
     return res.then(final_res => {return final_res});
 }
+
 
 // take (lat,lng) of destination, (lat,lng) of user, // (commuter : parking pass data)
 function directions(args){
