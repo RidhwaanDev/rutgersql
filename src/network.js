@@ -124,7 +124,7 @@ function queryMapsAPI(api_name,args){
     // add Google Map API key to params.
     params.units = "imperial";
     params.origins = args['latlng1'];
-    params.destinations= args['latlng2'];
+    params.destinations = args['latlng2'];
     params.key = config.GMAP_API_KEY;
 
     // add params and headers to config obj
@@ -132,6 +132,7 @@ function queryMapsAPI(api_name,args){
     axios_config.headers = "";
     axios.interceptors.request.use(config =>{
         const final_request_url = axios.getUri(config);
+        log(final_request_url);
         return config;
     }, error => {
         return Promise.reject(error);

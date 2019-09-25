@@ -226,25 +226,5 @@ const getStopsWithRoutes = () => {
     return res.then(final_res => {return final_res});
 };
 
-// take (lat,lng) of destination, (lat,lng) of user, // (commuter : parking pass data)
-const directions = (args) => {
-    // final sequence of directions.
-    const directions_list = [];
-    // directions to stop A, includes travel time ( on foot )
-    const stop_to_bus_matrix = {};
-    directions_list.push(stop_to_bus_matrix);
-    // first incoming bus to your stop, with travel time based on Google Maps API + buffer time if the stop is a student center ( bus drivers only take breaks at student centers )
-    // plus the stop that you need to get off at
-    const incoming_bus_route = {};
-    directions_list.push(incoming_bus_route);
-
-    // directions from the stop you get off of to the building you need to go to.
-    const stop_b_matrix = {};
-    directions_list.push(stop_b_matrix);
-
-    const user_lat = args['user_lat'];
-    const user_lng = args['user_lng'];
-
-};
 
 module.exports = complexResolvers;

@@ -42,10 +42,9 @@ function getStops(args){
 
 // Needs to be unnested.
 function getRoutes(args){
-     queryMapsAPI('distancematrix',{latlng1:"40.6655101,-73.89188969999998", latlng2:"40.6905615,-73.9976592"});
-    // log(chalk.magenta("getting routes"));
-    // const URL = config.API_URL + '/routes.json';
-    // return queryAPI(URL,args,true).then(res => { return res});
+    log(chalk.magenta("getting routes"));
+    const URL = config.API_URL + '/routes.json';
+    return queryAPI(URL,args,true).then(res => { return res});
 }
 
 function getArrivals(args){
