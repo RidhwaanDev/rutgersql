@@ -116,29 +116,22 @@ function queryAPI(URL, args, unnest = false){
         });
 }
 // query google maps API
-function queryMapsAPI(endpoint,args){
-    const url = config.GMAP_API_URL;
+function queryMapsAPI(api_name,args){
+    const url = config.generateGMAP_API(api_name);
     const axios_config = {};
-    let params = {};
-
-    // add args into params
-    // if(args != undefined || args != null){
-    //     Object.keys(args).forEach((key,value) => {
-    //         params[key] = args[key];
-    //     });
-    // }
+    const params = {};
 
     // add Google Map API key to params.
     params.units = "imperial";
-    params.origins = "Washington,DC";
-    params.destinations = "New York City,NY";
+    params.origins = args['latlng1'];
+    params.destinations= args['latlng2'];
     params.key = config.GMAP_API_KEY;
 
     // add params and headers to config obj
     axios_config.params = params;
+    axios_config.headers = "";
     axios.interceptors.request.use(config =>{
         const final_request_url = axios.getUri(config);
-        log(final_request_url);
         return config;
     }, error => {
         return Promise.reject(error);
