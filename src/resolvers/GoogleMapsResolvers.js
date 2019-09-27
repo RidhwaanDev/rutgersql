@@ -8,7 +8,6 @@ class GoogleMapsResolvers {
     }
 
 }
-
 module.exports = GoogleMapsResolvers;
 
 
