@@ -116,7 +116,7 @@ function queryAPI(URL, args, unnest = false){
         });
 }
 // query google maps API
-function queryMapsAPI(api_name,args){
+const queryMapsAPI = (api_name,args) => {
     const url = config.generateGMAP_API(api_name);
     const axios_config = {};
     const params = {};
@@ -142,9 +142,9 @@ function queryMapsAPI(api_name,args){
          .then((res) => {log(res)})
 }
 
-function queryRutgersPlacesAPI(){
+const queryRutgersPlacesAPI = () => {
 
-}
+};
 
 module.exports = {
     queryAPI,

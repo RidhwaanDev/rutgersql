@@ -2,7 +2,7 @@ const express  = require('express');
 const chalk  = require('chalk');
 const graphqlHTTP  = require("express-graphql");
 const schema  = require('./schema');
-const root  = require( './resolvers');
+const root  = require( './rootresolver');
 const cache  = require('./cache');
 
 const log = console.log;

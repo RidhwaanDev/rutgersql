@@ -3,6 +3,7 @@ const config = require('./config');
 const chalk = require('chalk');
 const {queryAPI,queryMapsAPI} = require('./network');
 const log = console.log;
+
 const baseResolvers = {
     // normal base queries. Single API call.
     routes:    (args,context) => {
@@ -22,7 +23,7 @@ const baseResolvers = {
     },
 };
 
-function getVehicles(args){
+const getVehicles = args => {
     log(chalk.green("getting vehicles"));
     const URL = config.API_URL + '/vehicles.json';
     const my_params  = {
@@ -32,27 +33,25 @@ function getVehicles(args){
     return queryAPI(URL,my_params,true).then(res => {return res});
 }
 
-
-
-function getStops(args){
+const getStops = args => {
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
     return queryAPI(URL,args).then(res => {return res});
 }
 
 // Needs to be unnested.
-function getRoutes(args){
+const getRoutes = args => {
     log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
     return queryAPI(URL,args,true).then(res => { return res});
 }
 
-function getArrivals(args){
+const getArrivals = args => {
     const URL = config.API_URL + '/arrival-estimates.json';
     return queryAPI(URL,args).then(res => {return res});
 }
 
-function getSegments(args){
+const getSegments = args => {
     const URL = config.API_URL + '/segments.json';
     return queryAPI(URL,args).then((res) => {
         let segments = [];
@@ -63,13 +62,13 @@ function getSegments(args){
         res['data'] = segments;
         return res;
     });
-}
+};
 
 module.exports = {
- baseResolvers,
- getStops,
- getSegments,
- getRoutes,
- getVehicles,
- getArrivals,
+    baseResolvers,
+    getStops,
+    getSegments,
+    getRoutes,
+    getVehicles,
+    getArrivals,
 };

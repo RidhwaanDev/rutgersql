@@ -2,7 +2,7 @@ const config = require('./config');
 const Position = require('./position');
 const log = console.log;
 
-const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./baseResolvers');
+const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./BaseResolvers');
 
 // complex resolvers that call the API multiple time times to do fancy stuff. Depends on baseResolvers
 const complexResolvers = {
