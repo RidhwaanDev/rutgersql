@@ -6,10 +6,8 @@ const GoogleMapsResolvers = {
     geocode    : (args) => {},
 };
 
-
-
 /**
- The Weilgorithim by Matt Weil
+ The Weilgorithim
 
  input: lat,lng of user => (pos), lat,lng of destination => (dest)
  procedure:
@@ -32,13 +30,13 @@ const GoogleMapsResolvers = {
 
  **/
 
-
+// STOP_A -> STOP_B
 const directions = args => {
 
-};
+}
+
 
 const distance = args => {
-
 };
 
 const geocode = args => {
@@ -49,12 +47,7 @@ const geocode = args => {
 // travel time from one stop to another stop via bus
 const travelTime = args => {
 
-}
+};
 
 
 module.exports = GoogleMapsResolvers;
-
-
-
-
-
