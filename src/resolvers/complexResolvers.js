@@ -1,5 +1,5 @@
-const config = require('./config');
-const Position = require('./position');
+const config = require('../config');
+const Position = require('../position');
 const log = console.log;
 
 const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./BaseResolvers');

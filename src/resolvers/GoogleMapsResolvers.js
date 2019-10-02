@@ -1,5 +1,5 @@
 const {queryMapsAPI} = require('../network');
-// resolvers for Google Maps
+// resolvers for Google Maps API
 const GoogleMapsResolvers = {
     directions : (args) => {},
     distance   : (args) => {},
@@ -33,7 +33,7 @@ const GoogleMapsResolvers = {
 // STOP_A -> STOP_B
 const directions = args => {
 
-}
+};
 
 
 const distance = args => {

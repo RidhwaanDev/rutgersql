@@ -11,12 +11,13 @@ module.exports = {
       */
      HEADERS: {
           'X-RapidAPI-Host': 'transloc-api-1-2.p.rapidapi.com',
-          'X-RapidAPI-Key':'hHcLr1qWHDmshwibREtIrhryL9bcp1Fw9AQjsnCiZyEzRrJKOS', // prob should do something abt this 
+          'X-RapidAPI-Key': process.env.TRANSLOC_API_KEY,
      },
 
+     TRANSLOC_ANNOUCEMENTS: 'https://rutgers.transloc.com/announcements/rss',
      RUTGERS_PLACES_API_URL: 'https://myapps.rutgers.edu/myr-services/RUBuildings/search/mdb/new%20brunswick',
      GMAP_API_URL : 'https://maps.googleapis.com/maps/api/distancematrix/json',
-     GMAP_API_KEY: 'AIzaSyBG5HdtAIB3OV-jC37XmrrgnW4T2Leep8E',
+     GMAP_API_KEY: process.env.GMAP_API_KEY,
 
      // generate a google map api url
      generateGMAP_API : (API_ENDPOINT) => {
