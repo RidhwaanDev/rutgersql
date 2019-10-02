@@ -1,5 +1,5 @@
 const config = require('../config');
-const Position = require('../position');
+const Position = require('../model/position');
 const log = console.log;
 
 const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./BaseResolvers');
@@ -159,6 +159,7 @@ const getRoutesByName = (args) => {
 // First get all the routes that stop at that stop.
 // Then from all of those routes, get all the vehicles and sort by the arrival time to that stop.
 const getStopsWithRoutes = () => {
+
     /**
      *  get all stops [stops]
      *  get all routes [routes]
@@ -168,7 +169,8 @@ const getStopsWithRoutes = () => {
      *  find all the arrival_estimates with stop_id equal to s.stop_id. if found, add v to a stop object.
      *
      */
-        // get all stops
+
+     // get all stops
     const res = getStops(null)
             .then(stops => {
                 return stops;

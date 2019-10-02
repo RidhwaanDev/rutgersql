@@ -5,9 +5,8 @@ const chalk  = require('chalk');
 const graphqlHTTP  = require("express-graphql");
 const schema  = require('./schema');
 const root  = require( './rootresolver');
-const cache  = require('./cache');
 
-const log = console.log;
+
 const app = express();
 app.use('/', graphqlHTTP({
     schema: schema,  // Must be provided
@@ -16,6 +15,3 @@ app.use('/', graphqlHTTP({
 }));
 
 module.exports = app;
-
-
-
