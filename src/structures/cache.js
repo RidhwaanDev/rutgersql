@@ -2,8 +2,8 @@
  cache API data from Transloc
  cache a map of stop_id's to names
  cache a map of route_id to route_names
- cache all active vehicles
- cache all active routes
+ cache all active vehicles?
+ cache all active routes?
  update cache every x seconds
  **/
 
@@ -30,7 +30,7 @@ class Cache {
             });
         };
 
-    // update cache
+    // update cache via worked thread
     dispatchUpdate(){
 
     }
@@ -48,6 +48,7 @@ class Cache {
             }
         });
     };
+
     // clear out cache
     flush  (){
         this.myCache.flushAll();
