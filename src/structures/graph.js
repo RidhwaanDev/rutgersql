@@ -1,9 +1,50 @@
-const graph = require('graph-data-structure');
+// https://www.npmjs.com/package/graph-data-structure/v/0.5.0
+const Graph = require('graph-data-structure');
 
-class Graph {
+// Graph of all the stops
+class BusGraph {
     constructor(list_of_stops){
+        this.graph = Graph();
+    }
 
+    addNode(node){
+       if(node instanceof GNode) {
+            this.graph.addNode(node);
+       }
+    }
+    // stop_a and stop_b should be id's for the stops
+    addEdge(stop_a, stop_b, dist_matrix){
+        // if(stop_a instanceof GNode && stop_b instanceof GNode) {
+        //     this.graph.addEdge(stop_a,stop_b,dist_matrix);
+        // }
+         this.graph.addEdge(stop_a,stop_b,dist_matrix);
+    }
+
+    topSort(){
+        return this.graph.topologicalSort();
+    }
+
+    stringify(){
+        return this.graph.serialize();
+    }
+
+    dfs(){
+        return this.graph.depthFirstSearch();
+    }
+
+    adjStop(stop){
+        return this.graph.adjacent(stop)
     }
 }
 
-module.exports = Graph;
+// A bus stop in the graph, G for graph.
+class GNode {
+   constructor(name,position,routes){
+        this.name = name;
+        this.position = position;
+        this.routes = routes;
+   }
+}
+
+module.exports.Graph = BusGraph;
+module.exports.GNode = GNode;

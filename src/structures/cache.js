@@ -13,8 +13,8 @@ const log = console.log;
 
 class Cache {
 
-    static stop_id_stop_name = "stop_id_stop_name";
-    static route_id_route_name = "route_id_route_name";
+    static STOP_ID_KEY  = "stop_id_stop_name";
+    static ROUTE_ID_KEY = "route_id_route_name";
 
     constructor(checkperiod,deleteOnExpire,errorOnMissing) {
         this.myCache = new NodeCache({checkperiod,deleteOnExpire,errorOnMissing});
@@ -30,7 +30,7 @@ class Cache {
             });
         };
 
-    // update cache via worked thread
+    // update cache every 30 minutes
     dispatchUpdate(){
 
     }
@@ -56,4 +56,6 @@ class Cache {
     }
 }
 
-module.exports = Cache;
+// Cache object that is used by every other module.
+const globalCache = new Cache(1000,false,true);
+module.exports = globalCache;

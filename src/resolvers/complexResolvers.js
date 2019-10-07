@@ -1,6 +1,7 @@
 const config = require('../config');
 const Position = require('../structures/position');
 const log = console.log;
+const globalCache = require('../structures/cache');
 
 const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./BaseResolvers');
 
@@ -121,6 +122,7 @@ const getRoutesByName = (args) => {
                             return a['arrival_at'] - b['arrival_at'];
                         });
                     });
+
                     // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
                     vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0] });
                     // combine route_obj and response
@@ -136,6 +138,7 @@ const getRoutesByName = (args) => {
                     // map each stop_id from stops to its name
                     const stops = stops_response['data'];
                     stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
+                    globalCache.set("route_id",JSON.stringify(stop_id_2_name));
                     response['vehicles'].forEach((vehicle) => {
                         vehicle['arrival_estimates'].forEach((est) => {
                             est['name'] = stop_id_2_name[est['stop_id']];
