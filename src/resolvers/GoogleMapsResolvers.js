@@ -7,22 +7,9 @@ const GoogleMapsResolvers = {
 };
 
 /**
- The Weilgorithim
 
- input: lat,lng of user => (pos), lat,lng of destination => (dest)
- procedure:
-    find closest stop to (dest) => STOP_B
-    find closest stop to (user) => STOP_A
-    find directions ( directions1) to STOP_A
-    find route arrivals, (R),  that go to STOP_B from STOP_A
-    find directions from STOP_B to dest
- **/
+ input: lat,lng of user => (pos), String of destination => (dest) => geocode(dest) => lat,lng dest
 
-/**
- *
- Weilgorithim first iteration
-
- input: lat,lng of user => (pos), lat,lng of destination => (dest)
  procedure:
  find closest stop to (dest) => STOP_B
  find closest stop to (user) => STOP_A

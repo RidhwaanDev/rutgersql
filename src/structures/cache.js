@@ -16,7 +16,7 @@ class Cache {
     static STOP_ID_KEY  = "stop_id_stop_name";
     static ROUTE_ID_KEY = "route_id_route_name";
 
-    constructor(checkperiod,deleteOnExpire,errorOnMissing) {
+    constructor(checkperiod,deleteOnExpire,errorOnMissing,useClones = false) {
         this.myCache = new NodeCache({checkperiod,deleteOnExpire,errorOnMissing});
     }
 
@@ -30,7 +30,7 @@ class Cache {
             });
         };
 
-    // update cache every 30 minutes
+    // update cache every x minutes
     dispatchUpdate(){
 
     }
@@ -49,10 +49,47 @@ class Cache {
         });
     };
 
+    onSet(action) {
+        let result = null;
+        this.myCache.on(action, (key, value) => {
+           try{
+               log(JSON.parse(value));
+               result = JSON.parse(value);
+           } catch (JSONParseException){
+              console.error(JSONParseException);
+           }
+        });
+    }
+
     // clear out cache
     flush  (){
         this.myCache.flushAll();
         this.myCache.close();
+    }
+}
+
+class BusCache extends Cache {
+    constructor(args) {
+        super(args);
+    }
+
+    getStopIDtoName(){
+
+    }
+
+    getRouteIdtoName(){
+
+    }
+}
+
+
+class RutgersCache extends Cache {
+    constructor(args){
+        super(args);
+    }
+
+    getPlaces(){
+
     }
 }
 

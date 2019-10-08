@@ -58,6 +58,7 @@ const getNearbyStops = (args) => {
             const str = temp.join(',');
 
             // now call arrival estimates with all the routes for only ten stops.
+            // TODO should change
             for (let i = 0; i < 10; i++) {
                 getArrivals({str, stops: (stops[i])['stop_id']}).then(res => {
                     stops[i].arrivals = res.data[0].arrivals;
@@ -78,6 +79,7 @@ const getSegmentsByName = (args) => {
             const res = response['data'];
             const map = {};
             res.forEach((it) => {map[it.long_name] = it.route_id});
+            globalCache.set(config.ROUTE_TO_NAME_KEY,map);
             const params = {routes: map[route_name]};
             return getSegments(params);
         })
@@ -107,13 +109,13 @@ const getVehiclesByName = (args) => {
     return result.then(vehicles_list => {return vehicles_list});
 };
 
-// get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object.
+// get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
 const getRoutesByName = (args) => {
     const route_result = getRoutes(null)
         .then((response) => {
             const res = response['data'];
-            const route_obj = res.filter((it) => (it.long_name == args['name']));
-            return vehicle_result = getVehiclesByName(args)
+            const route_obj = res.filter((it) => (it.long_name === args['name']));
+            return getVehiclesByName(args)
                 .then((vehicles) => {
                     // sort the arrivals of each vehicle
                     vehicles.forEach((vehicle) => {
@@ -126,8 +128,7 @@ const getRoutesByName = (args) => {
                     // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
                     vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0] });
                     // combine route_obj and response
-                    const result = {...route_obj, vehicles};
-                    return result;
+                    return {...route_obj, vehicles};
                 });
         })
         // give each stop_id its stop name.
@@ -205,14 +206,15 @@ const getStopsWithRoutes = () => {
                         const filtered = route_stops.filter(stop => stop === s['stop_id']);
                         //  stop is on the route
                         if(filtered.length >= 1){
-                            if(stopid_to_routeid[s['stop_id']] == undefined){
-                                stopid_to_routeid[s['stop_id']] = new Array();
+                            if(stopid_to_routeid[s['stop_id']] === undefined){
+                                stopid_to_routeid[s['stop_id']] = [];
                             } else {
                                 (stopid_to_routeid[s['stop_id']]).push(r['route_id']);
                             }
                         }
                     });
                 });
+
                 // for each stop
                 Object.keys(stopid_to_routeid).forEach( stop_id => {
                     const buses = vehicles.filter(b => stopid_to_routeid[stop_id].includes(b['route_id']));

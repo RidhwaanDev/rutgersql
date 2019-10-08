@@ -19,6 +19,9 @@ module.exports = {
      GMAP_API_URL : 'https://maps.googleapis.com/maps/api/distancematrix/json',
      GMAP_API_KEY: process.env.GMAP_API_KEY,
 
+     STOP_TO_NAME_KEY : "STOP_ID_TO_STOP_NAME",
+     ROUTE_TO_NAME_KEY : "ROUTE_ID_TO_STOP_NAME",
+
      // generate a google map api url
      generateGMAP_API : (API_ENDPOINT) => {
          return `https://maps.googleapis.com/maps/api/${API_ENDPOINT}/json`;

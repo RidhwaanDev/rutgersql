@@ -40,6 +40,7 @@ const getVehicles = args => {
     };
     return queryAPI(URL,my_params,true).then(res => {return res});
 };
+
 const getStops = args => {
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';

@@ -11,7 +11,7 @@ module.exports = buildSchema(`
 		segments(route : String!) : SegmentsResult
 		vehiclesByName(name: String!) : [Vehicle]
 		segmentsByName(name: String!) : SegmentsResult
-		routesByName(name: String!) : RoutesByNameResult 
+		routesByName(name: [String]!) : [RoutesByNameResult]
 		stopsWithRoutes : [StopsWithRoutesResult]
 		nearbyStops(lat1 : Float!, lon1: Float!) : [Stop] 
         # directions(user_lat: Float!, user_lng: Float!, dest_lat: Float!, dest_lng: Float!) : [DirectionResult]
