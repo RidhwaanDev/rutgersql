@@ -3,6 +3,6 @@ const {baseResolvers} = require('./resolvers/BaseResolvers');
 const complexResolvers = require('./resolvers/ComplexResolvers');
 const gmapResolvers = require('./resolvers/GoogleMapsResolvers');
 // just combine the two
-const resolvers = {...baseResolvers, ...complexResolvers};
+const resolvers = {...baseResolvers, ...complexResolvers, ...gmapResolvers};
 
 module.exports = resolvers;

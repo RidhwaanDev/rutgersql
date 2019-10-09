@@ -5,7 +5,7 @@ const chalk  = require('chalk');
 const graphqlHTTP  = require("express-graphql");
 const schema  = require('./schema');
 const root  = require( './rootresolver');
-
+const {queryMapsAPI} = require('./resolvers/GoogleMapsResolvers');
 const app = express();
 app.use('/', graphqlHTTP({
     schema: schema,  // Must be provided

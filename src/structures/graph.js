@@ -1,4 +1,3 @@
-// https://www.npmjs.com/package/graph-data-structure/v/0.5.0
 const Graph = require('graph-data-structure');
 
 // Graph of all the stops

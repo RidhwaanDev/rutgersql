@@ -27,7 +27,7 @@ const complexResolvers = {
 // take in lat,lng and returns the nearest stops
 const getNearbyStops = (args) => {
     // ths location of the person
-    const userPos = new Position(args['lat1'],args['lon1']);
+    const userPos = new Position(args['lat'],args['lng']);
     return getStops(null)
         .then(res => {
             const stops = res['data'];
@@ -62,7 +62,6 @@ const getNearbyStops = (args) => {
             for (let i = 0; i < 10; i++) {
                 getArrivals({str, stops: (stops[i])['stop_id']}).then(res => {
                     stops[i].arrivals = res.data[0].arrivals;
-                    log(stops[i]);
                 });
             }
 

@@ -1,10 +1,15 @@
-// network requests using axios. All API calls / DynamoDB queries are done through here.
+/**
+ *  All network requests should be here
+ */
+
+
 const axios = require('axios');
+const gmap = require('@google/maps');
 const config = require('./config');
 const chalk = require('chalk'); // fun colors for the terminal.
 
 const log = console.log;
-
+const error = console.error;
 // When using axios to call the segments API the result is sorted based on the keys of each segment since each key is a number.
 // This is bad because when we draw the segments we want the segments to be in the original order so it can be drawn properly.
 // Here we get the raw string from the segments API, replace each key with a some "key" and a number, then call JSON.parse, then return it
@@ -116,31 +121,32 @@ function queryAPI(URL, args, unnest = false){
             log(error.config);
         });
 }
-// query google maps API
-const queryMapsAPI = (api_name,args) => {
-    const url = config.generateGMAP_API(api_name);
-    const axios_config = {};
-    const params = {};
-
-    // add Google Map API key to params.
-    params.units = "imperial";
-    params.origins = args['latlng1'];
-    params.destinations = args['latlng2'];
-    params.key = config.GMAP_API_KEY;
-
-    // add params and headers to config obj
-    axios_config.params = params;
-    axios_config.headers = "";
-    axios.interceptors.request.use(config =>{
-        const final_request_url = axios.getUri(config);
-        log(final_request_url);
-        return config;
-    }, error => {
-        return Promise.reject(error);
+// query google maps API using node.js client library
+const queryMapsAPI = (api_name,args,callback) => {
+    const gmapclient = gmap.createClient({
+        key: config.GMAP_API_KEY,
     });
 
-    axios.get(url,axios_config)
-         .then((res) => {log(res)})
+    switch(api_name){
+        case "directions":
+            gmapclient.directions({
+                origin : args.user_pos,
+                destination : args.nearest_stop_pos,
+                mode   : "walking",
+            } , (err, res) => {
+                if(res.status !== 200 || res.json.status !== 'OK') {
+                    error(JSON.stringify(res, null, 2));
+                } else {
+                    callback(res);
+                }
+            },);
+
+            break;
+        case "distance":
+            break;
+        case "geocode":
+            break;
+    }
 };
 
 const queryRutgersPlacesAPI = () => {

@@ -13,6 +13,7 @@ const log = console.log;
 
 class Cache {
 
+
     static STOP_ID_KEY  = "stop_id_stop_name";
     static ROUTE_ID_KEY = "route_id_route_name";
 
@@ -83,7 +84,7 @@ class BusCache extends Cache {
 }
 
 
-class RutgersCache extends Cache {
+class MyRutgersCache extends Cache {
     constructor(args){
         super(args);
     }
