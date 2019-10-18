@@ -13,7 +13,6 @@ const log = console.log;
 
 class Cache {
 
-
     static STOP_ID_KEY  = "stop_id_stop_name";
     static ROUTE_ID_KEY = "route_id_route_name";
 
@@ -94,6 +93,8 @@ class MyRutgersCache extends Cache {
     }
 }
 
-// Cache object that is used by every other module.
-const globalCache = new Cache(1000,false,true);
-module.exports = globalCache;
+// Cache object for Transloc data
+const busCache = new Cache(1000,false,true);
+// Cache object for MyRutgersData
+const myRutgersCache = new Cache(1000,false,true);
+module.exports = busCache;
