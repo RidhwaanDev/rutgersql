@@ -14,7 +14,9 @@ const complex = {
         return getSegmentsByName(args);
     },
     routesByName: (args,context) => {
-        return getRoutesByName(args);
+        const c = getRoutesByName(args);
+        c.then(res => {});
+        return c;
     },
     stopsWithRoutes : (args,context) => {
         return getStopsWithRoutes(args);
@@ -110,7 +112,7 @@ const getVehiclesByName = (args) => {
 
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
 const getRoutesByName = (args) => {
-    const route_result = getRoutes(null)
+    return getRoutes(null)
         .then((response) => {
             const res = response['data'];
             const route_obj = res.filter((it) => (it.long_name === args['name']));
@@ -140,27 +142,32 @@ const getRoutesByName = (args) => {
                     stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
                     globalCache.set("route_id",JSON.stringify(stop_id_2_name));
                     response['vehicles'].forEach((vehicle) => {
+                        // add stop name to each vehicle estimate
                         vehicle['arrival_estimates'].forEach((est) => {
                             est['name'] = stop_id_2_name[est['stop_id']];
                         });
                     });
                     return response;
-                });
-
+                })
         })
         .then(final_result => {
             // segments is useless in this case and clutters the JSON output.
-            delete (final_result['0'])['segments'];
+            if(final_result['0'] != undefined){
+                delete (final_result['0'])['segments'];
+            }
             let vehicles = final_result['vehicles'];
             // combine the route object and the vehicles object
             return { ...final_result['0'],vehicles};
+        })
+        .then(res => {
+            log(res);
+            return res;
         });
-    return route_result.then(res => {return res});
-
 };
 
 // First get all the routes that stop at that stop.
 // Then from all of those routes, get all the vehicles and sort by the arrival time to that stop.
+
 const getStopsWithRoutes = () => {
 
     /**

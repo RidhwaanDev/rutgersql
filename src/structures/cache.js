@@ -13,9 +13,6 @@ const log = console.log;
 
 class Cache {
 
-    static STOP_ID_KEY  = "stop_id_stop_name";
-    static ROUTE_ID_KEY = "route_id_route_name";
-
     constructor(checkperiod,deleteOnExpire,errorOnMissing,useClones = false) {
         this.myCache = new NodeCache({checkperiod,deleteOnExpire,errorOnMissing});
     }

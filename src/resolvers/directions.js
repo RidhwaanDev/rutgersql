@@ -13,14 +13,12 @@ const Directions = {
 
 const log = console.log;
 /**
-
  input: lat,lng of user => (pos), String of destination => (dest) => geocode(dest) => lat,lng dest
 
  procedure:
  find closest stop to (dest) => STOP_B
  find closest stop to (user) => STOP_A
  find all route arrivals for STOP_A that go to STOP_B => [arrivals_A_to_B]
-
  **/
 
 // STOP_A -> STOP_B
@@ -30,7 +28,6 @@ const getDirections = (args) => {
         // user position, and final destination
         const user_pos = new Position(args.user_lat, args.user_lng);
         // const dest_pos = new Position(args.dest_lat, args.dest_lng);
-
         // get the closest stops to the user
         const final = nearbyStops({lat: user_pos.lat, lng : user_pos.lng},null)
             .then(stops => {
@@ -39,19 +36,17 @@ const getDirections = (args) => {
             })
             .then(nearest_stops => {
                 // get directions from the user to the three stops, lets do one for now.
-                // TODO fix this long peice of trash
-                return directions({user_pos : user_pos.toString(), nearest_stop_pos: new Position(nearest_stops[0].location.lat,nearest_stops[0].location.lng).toString()},(res) => {
+                const stop_pos = new Position(nearest_stops[0].location.lat,nearest_stops[0].location.lng);
+                return directions({user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()},(res) => {
+                    // distance and duration but remove any text characters. So 3 miles -> 3 or 5 min -> 5
                     const distance = res.json.routes[0].legs[0].distance.text.replace(/\D/g,'');
                     const duration = res.json.routes[0].legs[0].duration.text.replace(/\D/g,'');
-
                     const ret_test = {distance,duration};
-                    // log(`${distance} and ${duration}`);
                     resolve(ret_test);
                 })
             });
     })
 };
-
 
 // distance matrix API
 const distance = args => {
@@ -74,6 +69,5 @@ const geocode = args => {
 const travelTime = args => {
 
 };
-
 
 module.exports = Directions;
