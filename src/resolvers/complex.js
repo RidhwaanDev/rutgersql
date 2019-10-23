@@ -1,9 +1,8 @@
 // complex resolvers that call the API multiple time times to do fancy stuff. Depends on base
 const config = require('../config');
 const Position = require('../structures/position');
-const log = console.log;
 const globalCache = require('../structures/cache');
-
+const log = console.log;
 const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./base');
 
 const complex = {
@@ -92,8 +91,9 @@ const getSegmentsByName = (args) => {
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.
 const getVehiclesByName = (args) => {
     // get route_name from args
-    const route_name = args['name'];
-    const result = getRoutes(null)
+    const route_name = (args['name'])[0];
+    log(route_name);
+    return getRoutes(null)
         .then((response) => {
             // get all the routes and map the route id with its name. For example : ( "4040102" : "Route A )
             const res = response['data'];
@@ -103,11 +103,14 @@ const getVehiclesByName = (args) => {
             return getVehicles(config.route_id_test)
                 .then((response) => {
                     const res = response['data'];
-                    return res.filter((it) => map[it.route_id] === route_name);
+                    res.forEach(it => {if(map[it.route_id] === route_name){
+                    }});
+                    res.filter((it) => {map[it.route_id] === route_name;});
+                    return res;
                 });
-        });
+        })
+        .then(res => {return res});
 
-    return result.then(vehicles_list => {return vehicles_list});
 };
 
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
@@ -160,7 +163,6 @@ const getRoutesByName = (args) => {
             return { ...final_result['0'],vehicles};
         })
         .then(res => {
-            log(res);
             return res;
         });
 };
