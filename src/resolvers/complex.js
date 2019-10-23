@@ -92,7 +92,6 @@ const getSegmentsByName = (args) => {
 const getVehiclesByName = (args) => {
     // get route_name from args
     const route_name = (args['name'])[0];
-    log(route_name);
     return getRoutes(null)
         .then((response) => {
             // get all the routes and map the route id with its name. For example : ( "4040102" : "Route A )
@@ -119,6 +118,7 @@ const getRoutesByName = (args) => {
         .then((response) => {
             const res = response['data'];
             const route_obj = res.filter((it) => (it.long_name === args['name']));
+            log(route_obj);
             return getVehiclesByName(args)
                 .then((vehicles) => {
                     // sort the arrivals of each vehicle
@@ -132,7 +132,9 @@ const getRoutesByName = (args) => {
                     // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
                     vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0] });
                     // combine route_obj and response
-                    return {...route_obj, vehicles};
+                    const result = {...route_obj, vehicles};
+                    log(result);
+                    return result;
                 });
         })
         // give each stop_id its stop name.
