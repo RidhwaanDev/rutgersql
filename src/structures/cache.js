@@ -10,6 +10,10 @@
 const NodeCache = require( "node-cache" );
 
 const log = console.log;
+const CACHE_KEY = {
+    route_id_to_name : "route_id_to_name",
+    stop_id_to_name : "stop_id_to_name",
+};
 
 class Cache {
 
@@ -33,13 +37,13 @@ class Cache {
     }
 
     // get item from cache
-    get(key){
+    get(key,callback){
         this.myCache.get(key, (err, value) => {
             if(!err) {
                 if (value == undefined) {
                     log("value not found");
                 } else {
-                    log(value);
+                    callback(value);
                     return value;
                 }
             }
@@ -69,13 +73,13 @@ class BusCache extends Cache {
     constructor(args) {
         super(args);
     }
-
-    getStopIDtoName(){
-
+    getNameFromStopID(stopid){
+        // TODO
+        super.get(CACHE_KEY.stop_id_to_name,stopid);
     }
 
-    getRouteIdtoName(){
-
+    getNameFromRouteID(routeid){
+        // super.get(CACHE_KEY.route_id_to_name,routeid,());
     }
 }
 

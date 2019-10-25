@@ -1,13 +1,15 @@
 // resolvers for directions and other
 const {queryMapsAPI} = require('../network');
-const {nearbyStops} = require('./complex')
+const {nearbyStops,stopsWithRoutes} = require('./complex')
+const globalCache = require('../structures/cache');
+
 const Position = require('../structures/position');
 // resolvers for Google Maps API
 const Directions = {
     distance      : args => {},
     geocode       : args => {},
     directions : args => {
-        return getDirections(args).then(res => {return res});
+        return getDirections(args);
     },
 };
 
@@ -21,32 +23,69 @@ const log = console.log;
  find all route arrivals for STOP_A that go to STOP_B => [arrivals_A_to_B]
  **/
 
-// STOP_A -> STOP_B
 const getDirections = (args) => {
+    const user_pos = new Position(args.user_lat, args.user_lng);
+    const dest_pos = new Position(args.dest_lat, args.dest_lng);
+
+    // get directions from user_pos to closest stop
     return new Promise((resolve, reject) => {
-        log('getting directiosn');
         // user position, and final destination
-        const user_pos = new Position(args.user_lat, args.user_lng);
         // const dest_pos = new Position(args.dest_lat, args.dest_lng);
-        // get the closest stops to the user
-        const final = nearbyStops({lat: user_pos.lat, lng : user_pos.lng},null)
-            .then(stops => {
-                // return the nearest three stops, so the user can choose, slice does not include end index so its [0,4)
-                return stops.slice(0,4);
+
+        // get the closest stop to the user
+        return distanceToNearbyStop(user_pos)
+            .then(user_res => {
+                // get the closes stop to the dest
+                distanceToNearbyStop(dest_pos)
+                    .then(dest_res => {
+                        if(user_res != undefined && dest_res != undefined ){
+                            resolve({user_res, dest_res});
+                        }
+                    });
             })
-            .then(nearest_stops => {
-                // get directions from the user to the three stops, lets do one for now.
-                const stop_pos = new Position(nearest_stops[0].location.lat,nearest_stops[0].location.lng);
-                return directions({user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()},(res) => {
-                    // distance and duration but remove any text characters. So 3 miles -> 3 or 5 min -> 5
-                    const distance = res.json.routes[0].legs[0].distance.text.replace(/\D/g,'');
-                    const duration = res.json.routes[0].legs[0].duration.text.replace(/\D/g,'');
-                    const ret_test = {distance,duration};
-                    resolve(ret_test);
-                })
-            });
+
+    }).then( stops_src_dest => {
+        // routes coming to the stop
+        stopsWithRoutes(null,null)
+            .then(stops => {
+                // get the routes that are coming to the user_res stop from stops_src_dest
+                const stop_with_vehicles = (stops.filter(it => it.stop_id === stops_src_dest.user_res.stop_id))[0];
+                globalCache.get("route_id_to_name", map => {
+                    if(!map){
+                        log("route_id_to_name is unintialized");
+                    }
+                    stop_with_vehicles.vehicles.forEach(it => {it['name'] = map[it['route_id']]});
+                    log(stop_with_vehicles);
+                });
+
+            })
     })
 };
+
+const distanceToNearbyStop = (user_pos) => {
+    return new Promise((resolve,reject) => {
+        nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null)
+            .then(stops => {
+                // get directions from the user to the three stops, lets do one for now.
+                stops.slice(0,4);
+                const stop_pos = new Position(stops[0].location.lat,stops[0].location.lng);
+                return directions({user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()},(res) => {
+                    // distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
+                    if(res == null || res == undefined){
+                        reject(res);
+                    } else {
+                        const distance = res.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
+                        const duration = res.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
+                        const ret_test = {name : stops[0].name, stop_id : stops[0].stop_id, distance, duration};
+                        resolve(ret_test);
+                    }
+
+                })
+            });
+    });
+};
+
+// Directions from user_pos to the nearest stop
 
 // distance matrix API
 const distance = args => {
@@ -54,7 +93,7 @@ const distance = args => {
 };
 // directions API
 const directions = (args, callback) => {
-    // user_pos, dest_pos must be Strings, using a callback because Promise are finnicky
+    // TODO change to promise
     return queryMapsAPI("directions",args, function(res){
         callback(res);
     });

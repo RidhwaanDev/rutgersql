@@ -13,9 +13,7 @@ const complex = {
         return getSegmentsByName(args);
     },
     routesByName: (args,context) => {
-        const c = getRoutesByName(args);
-        c.then(res => {});
-        return c;
+        return getRoutesByName(args);
     },
     stopsWithRoutes : (args,context) => {
         return getStopsWithRoutes(args);
@@ -102,6 +100,7 @@ const getVehiclesByName = (args) => {
             return getVehicles(config.route_id_test)
                 .then((response) => {
                     const res = response['data'];
+                    globalCache.set("route_id_to_name", map);
                     res.forEach(it => {if(map[it.route_id] === route_name){
                     }});
                     res.filter((it) => {map[it.route_id] === route_name;});
@@ -114,11 +113,11 @@ const getVehiclesByName = (args) => {
 
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
 const getRoutesByName = (args) => {
+    const rt_name = args['name'];
     return getRoutes(null)
         .then((response) => {
             const res = response['data'];
             const route_obj = res.filter((it) => (it.long_name === args['name']));
-            log(route_obj);
             return getVehiclesByName(args)
                 .then((vehicles) => {
                     // sort the arrivals of each vehicle
@@ -133,7 +132,6 @@ const getRoutesByName = (args) => {
                     vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0] });
                     // combine route_obj and response
                     const result = {...route_obj, vehicles};
-                    log(result);
                     return result;
                 });
         })
@@ -145,13 +143,28 @@ const getRoutesByName = (args) => {
                     // map each stop_id from stops to its name
                     const stops = stops_response['data'];
                     stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
-                    globalCache.set("route_id",JSON.stringify(stop_id_2_name));
+                    // map of route_id to name ( 4023023 -> Route LX)
+                    globalCache.get("route_id_to_name",(map) => {
+                        if(map == undefined || map == null){
+                            log("cache is empty");
+                        }
+                        stops.routes.filter(it => {map[it] == rt_name})
+                    });
+
+                    globalCache.set("stop_id_to_name",JSON.stringify(stop_id_2_name));
+
+                    // response['vehicles'].filter((vehicle) => {
+                    //     // add stop name to each vehicle estimate
+                    // });
+
                     response['vehicles'].forEach((vehicle) => {
                         // add stop name to each vehicle estimate
                         vehicle['arrival_estimates'].forEach((est) => {
                             est['name'] = stop_id_2_name[est['stop_id']];
                         });
                     });
+
+                    (response['0'])['stops'] = stops;
                     return response;
                 })
         })
@@ -160,6 +173,7 @@ const getRoutesByName = (args) => {
             if(final_result['0'] != undefined){
                 delete (final_result['0'])['segments'];
             }
+
             let vehicles = final_result['vehicles'];
             // combine the route object and the vehicles object
             return { ...final_result['0'],vehicles};

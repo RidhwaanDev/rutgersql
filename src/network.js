@@ -10,6 +10,7 @@ const chalk = require('chalk'); // fun colors for the terminal.
 
 const log = console.log;
 const error = console.error;
+
 // When using axios to call the segments API the result is sorted based on the keys of each segment since each key is a number.
 // This is bad because when we draw the segments we want the segments to be in the original order so it can be drawn properly.
 // Here we get the raw string from the segments API, replace each key with a some "key" and a number, then call JSON.parse, then return it
@@ -23,14 +24,12 @@ const cleanSegmentsResult = result => {
 
     // count the keys in the sorted/messed up object
     const result_sorted = JSON.parse(str);
-    log(result_sorted);
     let i = 0;
     Object.keys(result_sorted['data']).forEach(key => {
        i++;
     });
 
     // do regex replace with "key" + key_cnt on each instance of the key
-    log(`There are ${i} amount of keys in sorted segments object`);
     let key_cnt = 0;
     let prev = str;
     let running_str = '';
@@ -46,9 +45,6 @@ const cleanSegmentsResult = result => {
         j++;
     });
 
-    log(`There are ${i} amount of keys in cleaned segments object`);
-
-    log(final_segments);
     return final_segments;
 };
 
@@ -86,7 +82,6 @@ function queryAPI(URL, args, unnest = false){
     axios_config.headers = config.HEADERS;
     axios_config.params = my_params;
     if(segments){
-        log('adding semgment confit');
         axios_config.responseType = 'arraybuffer';
         axios_config.transformResponse = undefined;
     }
@@ -96,7 +91,7 @@ function queryAPI(URL, args, unnest = false){
             if(segments){
                 return cleanSegmentsResult(result);
             }
-            // Transloc sometimes returns "data : { 1323 : {actual data here }}" so we have to unwrap 1323 to get real data.
+            // Some endpoints on Transloc return "data : { 1323 : {actual data here}}" so we have to unwrap 1323 to get real data.
             if(unnest){
                 let res = result['data'];
                 let data = (res['data'])['1323'];

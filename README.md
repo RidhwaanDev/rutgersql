@@ -15,6 +15,11 @@ git clone https://github.com/RidhwaanDev/rutgersql.git
 npm i
 npm start
 ```
+
+Run test with
+```
+npm start
+```
 ##### Remember to place your  X-RapidAPI-Key in  [config.js](https://github.com/RidhwaanDev/rutgersql/blob/master/src/config.js) 
 
 To get an X-RapidAPI-Key go to this link [url](https://rapidapi.com/transloc/api/openapi-1-2) and log in/sign up for an API_KEY.
