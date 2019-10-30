@@ -53,9 +53,9 @@ function queryAPI(URL, args, unnest = false){
      let my_params = {
         'agencies': '1323',
     };
+
     let segments = false;
-    // segments endpoint does not work with geo_area.
-    //TODO geoarea is not the problem
+
     if(!URL.includes("segments")){
         my_params['geo_area'] = config.geo_area;
     } else {

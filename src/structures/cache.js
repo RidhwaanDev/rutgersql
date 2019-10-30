@@ -37,13 +37,12 @@ class Cache {
     }
 
     // get item from cache
-    get(key,callback){
+    get(key){
         this.myCache.get(key, (err, value) => {
             if(!err) {
                 if (value == undefined) {
                     log("value not found");
                 } else {
-                    callback(value);
                     return value;
                 }
             }

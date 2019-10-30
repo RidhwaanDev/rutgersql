@@ -1,8 +1,6 @@
 module.exports = {
      API_URL: 'https://transloc-api-1-2.p.rapidapi.com',
      geo_area: '40.506831,-74.456645|15000',
-     route_id_test : '4012666', // summer 2
-     route_id_test_2: '401266',
      stop_id_test : '4229492',
      agency: 1323,
      /** HOW TO PUT YOUR API_KEY
@@ -28,6 +26,5 @@ module.exports = {
          return `https://maps.googleapis.com/maps/api/${API_ENDPOINT}/json`;
      }
 };
-
 
 

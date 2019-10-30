@@ -1,6 +1,7 @@
 // resolvers for directions and other
 const {queryMapsAPI} = require('../network');
 const {nearbyStops,stopsWithRoutes} = require('./complex')
+const {getRoutes} = require('./base')
 const globalCache = require('../structures/cache');
 
 const Position = require('../structures/position');
@@ -48,17 +49,11 @@ const getDirections = (args) => {
         // routes coming to the stop
         stopsWithRoutes(null,null)
             .then(stops => {
-                // get the routes that are coming to the user_res stop from stops_src_dest
+                // find the routes that go to dest_res from user_res
                 const stop_with_vehicles = (stops.filter(it => it.stop_id === stops_src_dest.user_res.stop_id))[0];
-                globalCache.get("route_id_to_name", map => {
-                    if(!map){
-                        log("route_id_to_name is unintialized");
-                    }
-                    stop_with_vehicles.vehicles.forEach(it => {it['name'] = map[it['route_id']]});
-                    log(stop_with_vehicles);
-                });
-
-            })
+                // now that we have all the routes coming to into the stop closest to the user, only get the ones
+                // that go the destination
+            });
     })
 };
 

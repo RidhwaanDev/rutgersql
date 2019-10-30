@@ -67,7 +67,6 @@ const getNearbyStops = (args) => {
             return stops;
         });
 };
-
 // takes the route name like 'A' or 'LX' and gets the segments.
 const getSegmentsByName = (args) => {
     // get route_name from args
@@ -89,26 +88,29 @@ const getSegmentsByName = (args) => {
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.
 const getVehiclesByName = (args) => {
     // get route_name from args
-    const route_name = (args['name'])[0];
+    const route_name = args['name'];
+    log(args);
     return getRoutes(null)
         .then((response) => {
             // get all the routes and map the route id with its name. For example : ( "4040102" : "Route A )
             const res = response['data'];
             const map = {};
+            // map route_id to name
             res.forEach((it) => {map[it.route_id] = it.long_name});
+            return {res, map}
             // get all the vehicles and filter the ones where the route_id in map returns the route name that we want.
-            return getVehicles(config.route_id_test)
-                .then((response) => {
-                    const res = response['data'];
-                    globalCache.set("route_id_to_name", map);
-                    res.forEach(it => {if(map[it.route_id] === route_name){
-                    }});
-                    res.filter((it) => {map[it.route_id] === route_name;});
-                    return res;
-                });
-        })
-        .then(res => {return res});
 
+        }) // this is its own Promise block for readbility.
+        .then((vehicles_with_map) => {
+            const map = vehicles_with_map.map;
+            return getVehicles()
+                .then((response) => {
+                    let vehicles = response['data'];
+                    log(vehicles.length);
+                    const vehicles_filtered = vehicles.filter(it => map[it.route_id] === route_name);
+                    return vehicles_filtered;
+                });
+        });
 };
 
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
@@ -117,7 +119,7 @@ const getRoutesByName = (args) => {
     return getRoutes(null)
         .then((response) => {
             const res = response['data'];
-            const route_obj = res.filter((it) => (it.long_name === args['name']));
+            const route_obj = res.filter((it) => (it.long_name === rt_name));
             return getVehiclesByName(args)
                 .then((vehicles) => {
                     // sort the arrivals of each vehicle
@@ -143,20 +145,6 @@ const getRoutesByName = (args) => {
                     // map each stop_id from stops to its name
                     const stops = stops_response['data'];
                     stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
-                    // map of route_id to name ( 4023023 -> Route LX)
-                    globalCache.get("route_id_to_name",(map) => {
-                        if(map == undefined || map == null){
-                            log("cache is empty");
-                        }
-                        stops.routes.filter(it => {map[it] == rt_name})
-                    });
-
-                    globalCache.set("stop_id_to_name",JSON.stringify(stop_id_2_name));
-
-                    // response['vehicles'].filter((vehicle) => {
-                    //     // add stop name to each vehicle estimate
-                    // });
-
                     response['vehicles'].forEach((vehicle) => {
                         // add stop name to each vehicle estimate
                         vehicle['arrival_estimates'].forEach((est) => {
@@ -220,7 +208,8 @@ const getStopsWithRoutes = () => {
                 const routes = (combined['routes'])['data'];
                 const stops = (combined['stops'])['data'];
                 const vehicles = (combined['vehicles'])['data'];
-                // r u ready for some O(n^3) magic ?!?!
+                log(vehicles);
+
                 // map each stop to its routes
                 let stopid_to_routeid = {};
                 stops.forEach(s => {
@@ -254,7 +243,9 @@ const getStopsWithRoutes = () => {
                 });
                 return stops;
             });
-    return res.then(final_res => {return final_res});
+    return res.then(final_res => {
+        return final_res
+    });
 };
 
 
