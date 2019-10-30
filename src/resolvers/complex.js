@@ -171,17 +171,17 @@ const getRoutesByName = (args) => {
                     return response;
                 })
         })
-        .then(res => {
-            // get arrivals for the route
-            const arrivals = getArrivals({routes: res.rt_id})
-                .then(arrivals=> {
-                    return arrivals;
-                });
-
-            log(res);
-            log(arrivals);
-            return {res,arrivals};
-        })
+        // .then(res => {
+        //     // get arrivals for the route
+        //     const arrivals = getArrivals({routes: res.rt_id})
+        //         .then(arrivals=> {
+        //             return arrivals;
+        //         });
+        //
+        //     log(res);
+        //     log(arrivals);
+        //     return {res};
+        // })
         .then(final_result => {
             // segments is useless in this case and clutters the JSON output.
             if(final_result['0'] != undefined){
