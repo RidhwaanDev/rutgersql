@@ -158,6 +158,7 @@ const getRoutesByName = (args) => {
                         });
                     });
 
+
                     // stops.filter((stop) => stop.routes.include());
                     response['vehicles'].forEach((vehicle) => {
                         // add stop name to each vehicle estimate
@@ -169,6 +170,17 @@ const getRoutesByName = (args) => {
                     (response['0'])['stops'] = stops_filtered;
                     return response;
                 })
+        })
+        .then(res => {
+            // get arrivals for the route
+            const arrivals = getArrivals({routes: res.rt_id})
+                .then(arrivals=> {
+                    return arrivals;
+                });
+
+            log(res);
+            log(arrivals);
+            return {res,arrivals};
         })
         .then(final_result => {
             // segments is useless in this case and clutters the JSON output.

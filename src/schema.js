@@ -6,7 +6,7 @@ module.exports = buildSchema(`
 	type Query {
 		routes : RouteResult,
 		stops : StopResult
-		arrivals(routes : [String]!, stops : [String]!) : ArrivalEst_Result
+		arrivals(routes : [String], stops : [String]) : ArrivalEst_Result
 		vehicles(routes: [String]) : VehiclesResult
 		segments(route : String!) : SegmentsResult
 		vehiclesByName(name: String!) : [Vehicle]
@@ -26,6 +26,7 @@ module.exports = buildSchema(`
       #end_location : Position,
       #polyline : String
     }
+    
 	type StopsWithRoutesResult {
        code : String,
        description : String,
@@ -43,7 +44,6 @@ module.exports = buildSchema(`
 	
 	
     type RoutesByNameResult {
-        vehicles : [Vehicle],
 	    description : String,
 	    short_name : String,
 		route_id : String,
@@ -57,6 +57,8 @@ module.exports = buildSchema(`
         is_hidden: Boolean ,
         type: String,
         stops : [Stop]
+        vehicles : [Vehicle],
+        arrivals : [Arrival]
     }
     
     type RouteResult {
