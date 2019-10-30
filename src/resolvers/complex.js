@@ -89,7 +89,6 @@ const getSegmentsByName = (args) => {
 const getVehiclesByName = (args) => {
     // get route_name from args
     const route_name = args['name'];
-    log(args);
     return getRoutes(null)
         .then((response) => {
             // get all the routes and map the route id with its name. For example : ( "4040102" : "Route A )
@@ -106,7 +105,6 @@ const getVehiclesByName = (args) => {
             return getVehicles()
                 .then((response) => {
                     let vehicles = response['data'];
-                    log(vehicles.length);
                     const vehicles_filtered = vehicles.filter(it => map[it.route_id] === route_name);
                     return vehicles_filtered;
                 });
@@ -120,6 +118,7 @@ const getRoutesByName = (args) => {
         .then((response) => {
             const res = response['data'];
             const route_obj = res.filter((it) => (it.long_name === rt_name));
+            const rt_id = (route_obj['0']).route_id;
             return getVehiclesByName(args)
                 .then((vehicles) => {
                     // sort the arrivals of each vehicle
@@ -133,7 +132,7 @@ const getRoutesByName = (args) => {
                     // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
                     vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0] });
                     // combine route_obj and response
-                    const result = {...route_obj, vehicles};
+                    const result = {...route_obj, vehicles, rt_id};
                     return result;
                 });
         })
@@ -145,6 +144,21 @@ const getRoutesByName = (args) => {
                     // map each stop_id from stops to its name
                     const stops = stops_response['data'];
                     stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
+
+                    // get the stops only on the route passed in
+                    const stops_filtered  = new Array();
+
+                    // TODO clean this up
+                    stops.forEach((stop) => {
+                        stop.routes.forEach(route => {
+                            if(route === response.rt_id){
+                                stops_filtered.push(stop);
+                                return;
+                            }
+                        });
+                    });
+
+                    // stops.filter((stop) => stop.routes.include());
                     response['vehicles'].forEach((vehicle) => {
                         // add stop name to each vehicle estimate
                         vehicle['arrival_estimates'].forEach((est) => {
@@ -152,7 +166,7 @@ const getRoutesByName = (args) => {
                         });
                     });
 
-                    (response['0'])['stops'] = stops;
+                    (response['0'])['stops'] = stops_filtered;
                     return response;
                 })
         })
@@ -165,9 +179,6 @@ const getRoutesByName = (args) => {
             let vehicles = final_result['vehicles'];
             // combine the route object and the vehicles object
             return { ...final_result['0'],vehicles};
-        })
-        .then(res => {
-            return res;
         });
 };
 
