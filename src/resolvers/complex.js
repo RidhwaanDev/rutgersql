@@ -23,6 +23,7 @@ const complex = {
     },
 };
 
+
 // take in lat,lng and returns the nearest stops
 const getNearbyStops = (args) => {
     // ths location of the person
