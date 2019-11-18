@@ -23,11 +23,11 @@ const base = {
 
 };
 // TODO use async function
-const getRoutes   = async (args) => {};
-const getArrivals = async (args) => {};
-const getSegments = async (args) => {};
-const getVehicles = async (args) => {};
-const getStops    = async (args) => {};
+// const getRoutes   = async (args) => {};
+// const getArrivals = async (args) => {};
+// const getSegments = async (args) => {};
+// const getVehicles = async (args) => {};
+// const getStops    = async (args) => {};
 
 const getVehicles = () => {
     log(chalk.green("getting vehicles"));
