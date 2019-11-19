@@ -35,7 +35,7 @@ const getVehicles = () => {
     const my_params  = {
         // if routes is undefined set key as null otherwise join it ( changes it from routes : [a,b,c] to routes : "a,b,c". ( Array -> Single String basically)
         // Also this line might only be needed for Summer routes because the API behavior was different in Summer 2019. Will need to test.
-        //  routes : Object.is(args['routes'], undefined) ? null : args['routes'].join(',')
+        // routes : Object.is(args['routes'], undefined) ? null : args['routes'].join(',')
          geo_area : config.geo_area
 
     };
@@ -49,6 +49,7 @@ const getStops = args => {
         return res;
     });
 };
+
 
 // Needs to be unnested.
 const getRoutes = args => {

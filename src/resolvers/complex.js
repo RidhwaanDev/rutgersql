@@ -113,6 +113,7 @@ const getVehiclesByName = (args) => {
 };
 
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
+
 const getRoutesByName = (args) => {
     const rt_name = args['name'];
     return getRoutes(null)
@@ -159,30 +160,35 @@ const getRoutesByName = (args) => {
                         });
                     });
 
-
-                    // stops.filter((stop) => stop.routes.include());
                     response['vehicles'].forEach((vehicle) => {
                         // add stop name to each vehicle estimate
                         vehicle['arrival_estimates'].forEach((est) => {
                             est['name'] = stop_id_2_name[est['stop_id']];
                         });
                     });
-
                     (response['0'])['stops'] = stops_filtered;
                     return response;
                 })
         })
-        // .then(res => {
-        //     // get arrivals for the route
-        //     const arrivals = getArrivals({routes: res.rt_id})
-        //         .then(arrivals=> {
-        //             return arrivals;
-        //         });
-        //
-        //     log(res);
-        //     log(arrivals);
-        //     return {res};
-        // })
+        .then(response => {
+            const stops_filtered = response['0'].stops;
+            const stop_id_to_arrivals = {};
+            return getArrivals({routes: response.rt_id})
+                .then(res => {
+                    const data = res['data'];
+                    // map each stop_id to its corresponding arrivals
+                    data.forEach( arrival => {
+                        stop_id_to_arrivals[arrival.stop_id] = arrival.arrivals;
+                    });
+
+                    // put arrival estimates for each stop using the map (stop_id_to_arrivals);
+                    stops_filtered.forEach(stop => {
+                        stop['arrivals']  = stop_id_to_arrivals[stop.stop_id];
+                    });
+
+                });
+
+        })
         .then(final_result => {
             // segments is useless in this case and clutters the JSON output.
             if(final_result['0'] != undefined){

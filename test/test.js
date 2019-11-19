@@ -1,26 +1,21 @@
+require('dotenv').config();
 const assert = require('assert');
-const resolvers = require('../src/rootresolver');
 const routes = [];
 
-const base = require('/src/resolvers/base');
-const complex = require('/src/resolvers/complex');
-const log = consol.log;
+const {baseResolvers} = require('../src/resolvers/base');
+const log = console.log;
+
 // test transloc API
 describe('transloc_api', () => {
     describe('routes', () => {
-        it('should not return null for any routes',() => {
-            const res = base.getRoutes(null)
-                .then(routes => {log(routes)});
-            assert.notEqual(res,null);
+        it('it should get all the routes',() => {
+
         });
     });
 
     describe('stops', () => {
         it('should not return null for any stops',() => {
             // TODO
-            const res = base.getStops(null)
-                .then(stops=> {log(stops)});
-            assert.notEqual(res,null);
         });
 
     });
@@ -28,9 +23,6 @@ describe('transloc_api', () => {
     describe('vehicles', () => {
         it('should not return null for any vehicles',() => {
             // TODO
-            const res = base.getVehicles(null)
-                .then(vehicles => {log(vehicles)});
-            assert.notEqual(res,null);
         });
     });
 
@@ -38,8 +30,6 @@ describe('transloc_api', () => {
     });
 
     describe('segments', () => {
-
-        assert.notEqual(res,null);
     });
 });
 

@@ -1,7 +1,7 @@
 // resolvers for directions and other
 const {queryMapsAPI} = require('../network');
-const {nearbyStops,stopsWithRoutes} = require('./complex')
-const {getRoutes} = require('./base')
+const {nearbyStops,stopsWithRoutes} = require('./complex');
+const {getRoutes} = require('./base');
 const globalCache = require('../structures/cache');
 
 const Position = require('../structures/position');
@@ -44,8 +44,7 @@ const getDirections = (args) => {
                         }
                     });
             })
-
-    }).then( stops_src_dest => {
+    }).then(stops_src_dest => {
         // routes coming to the stop
         stopsWithRoutes(null,null)
             .then(stops => {
