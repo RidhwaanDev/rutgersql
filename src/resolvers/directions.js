@@ -1,8 +1,6 @@
 // resolvers for directions and other
 const {queryMapsAPI} = require('../network');
 const {nearbyStops,stopsWithRoutes} = require('./complex');
-const {getRoutes} = require('./base');
-const globalCache = require('../structures/cache');
 
 const Position = require('../structures/position');
 // resolvers for Google Maps API
@@ -24,16 +22,14 @@ const log = console.log;
  find all route arrivals for STOP_A that go to STOP_B => [arrivals_A_to_B]
  **/
 
-const getDirections = (args) => {
+const getDirections = args => {
     const user_pos = new Position(args.user_lat, args.user_lng);
     const dest_pos = new Position(args.dest_lat, args.dest_lng);
-
     // get directions from user_pos to closest stop
     return new Promise((resolve, reject) => {
         // user position, and final destination
         // const dest_pos = new Position(args.dest_lat, args.dest_lng);
-
-        // get the closest stop to the user
+       // get the closest stop to the user
         return distanceToNearbyStop(user_pos)
             .then(user_res => {
                 // get the closes stop to the dest
@@ -46,17 +42,16 @@ const getDirections = (args) => {
             })
     }).then(stops_src_dest => {
         // routes coming to the stop
-        stopsWithRoutes(null,null)
-            .then(stops => {
-                // find the routes that go to dest_res from user_res
-                const stop_with_vehicles = (stops.filter(it => it.stop_id === stops_src_dest.user_res.stop_id))[0];
-                // now that we have all the routes coming to into the stop closest to the user, only get the ones
-                // that go the destination
-            });
+        // stopsWithRoutes(null,null)
+        //     .then(stops => {
+        //         // find the routes that go to dest_res from user_res
+        //         const stop_with_vehicles = (stops.filter(it => it.stop_id === stops_src_dest.user_res.stop_id))[0];
+        //         // now that we have all the routes coming to into the stop closest to the user, only get the ones
+        //         // that go the destination
+        //     });
     })
 };
-
-const distanceToNearbyStop = (user_pos) => {
+const distanceToNearbyStop = user_pos => {
     return new Promise((resolve,reject) => {
         nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null)
             .then(stops => {

@@ -1,8 +1,3 @@
-/**
- *  All network requests should be here
- */
-
-
 const axios = require('axios');
 const gmap = require('@google/maps');
 const config = require('./config');
@@ -123,7 +118,7 @@ const queryMapsAPI = (api_name,args,callback) => {
     });
 
     switch(api_name){
-        case "directions":
+        case "directions" :
             gmapclient.directions({
                 origin : args.user_pos,
                 destination : args.nearest_stop_pos,

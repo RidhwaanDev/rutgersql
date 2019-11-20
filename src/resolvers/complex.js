@@ -30,6 +30,9 @@ const getNearbyStops = (args) => {
     const userPos = new Position(args['lat'],args['lng']);
     return getStops(null)
         .then(res => {
+            if(res == undefined){
+                log("we have a problem");
+            }
             const stops = res['data'];
             // add distance to each stop object
             stops.forEach(it => {
@@ -58,15 +61,23 @@ const getNearbyStops = (args) => {
             const str = temp.join(',');
 
             // now call arrival estimates with all the routes for only ten stops.
-            // TODO should change
+            // TODO FIX this throws error
             for (let i = 0; i < 10; i++) {
                 getArrivals({str, stops: (stops[i])['stop_id']}).then(res => {
-                    stops[i].arrivals = res.data[0].arrivals;
+                    if(res == undefined ){
+                        log('arrivals undefined');
+                    } else {
+                        stops[i].arrivals = res.data[0].arrivals;
+                    }
                 });
             }
 
             return stops;
-        });
+        })
+        .catch(error => {
+            log("There has been an error getting nearby stops");
+            log(error);
+        })
 };
 // takes the route name like 'A' or 'LX' and gets the segments.
 const getSegmentsByName = (args) => {
@@ -172,7 +183,7 @@ const getRoutesByName = (args) => {
         .then(response => {
             const stops_filtered = response['0'].stops;
             const stop_id_to_arrivals = {};
-            // this is really slow
+            // TODO this is really slow, need to speed up
             return getArrivals({routes: response.rt_id})
                 .then(res => {
                     const data = res['data'];
