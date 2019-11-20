@@ -113,7 +113,6 @@ const getVehiclesByName = (args) => {
 };
 
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
-
 const getRoutesByName = (args) => {
     const rt_name = args['name'];
     return getRoutes(null)
@@ -173,6 +172,7 @@ const getRoutesByName = (args) => {
         .then(response => {
             const stops_filtered = response['0'].stops;
             const stop_id_to_arrivals = {};
+            // this is really slow
             return getArrivals({routes: response.rt_id})
                 .then(res => {
                     const data = res['data'];
@@ -185,9 +185,9 @@ const getRoutesByName = (args) => {
                     stops_filtered.forEach(stop => {
                         stop['arrivals']  = stop_id_to_arrivals[stop.stop_id];
                     });
-
+                    (response['0'])['stops'] = stops_filtered;
+                   return response;
                 });
-
         })
         .then(final_result => {
             // segments is useless in this case and clutters the JSON output.
