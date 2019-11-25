@@ -61,11 +61,11 @@ const getNearbyStops = (args) => {
             const str = temp.join(',');
 
             // now call arrival estimates with all the routes for only ten stops.
-            // TODO FIX this throws error
             for (let i = 0; i < 10; i++) {
                 getArrivals({str, stops: (stops[i])['stop_id']}).then(res => {
-                    if(res == undefined ){
+                    if(typeof res === "undefined" || typeof res.data[0] === "undefined" || typeof stops === "undefined" ){
                         log('arrivals undefined');
+                        return;
                     } else {
                         stops[i].arrivals = res.data[0].arrivals;
                     }
@@ -249,7 +249,7 @@ const getStopsWithRoutes = () => {
                 const routes = (combined['routes'])['data'];
                 const stops = (combined['stops'])['data'];
                 const vehicles = (combined['vehicles'])['data'];
-                log(vehicles);
+                // log(vehicles);
 
                 // map each stop to its routes
                 let stopid_to_routeid = {};
