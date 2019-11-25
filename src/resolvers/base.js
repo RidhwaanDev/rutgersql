@@ -22,14 +22,8 @@ const base = {
     },
 
 };
-// TODO use async function
-// const getRoutes   = async (args) => {};
-// const getArrivals = async (args) => {};
-// const getSegments = async (args) => {};
-// const getVehicles = async (args) => {};
-// const getStops    = async (args) => {};
 
-const getVehicles = () => {
+const getVehicles = async () => {
     log(chalk.green("getting vehicles"));
     const URL = config.API_URL + '/vehicles.json';
     const my_params  = {
@@ -39,41 +33,37 @@ const getVehicles = () => {
          geo_area : config.geo_area
 
     };
-    return queryAPI(URL,my_params,true).then(res => {return res});
+    return await queryAPI(URL,my_params,true);
 };
 
-const getStops = args => {
+const getStops = async args => {
     log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
-    return queryAPI(URL,args).then(res => {
-        return res;
-    });
+    return await queryAPI(URL,args);
 };
-
 
 // Needs to be unnested.
-const getRoutes = args => {
+const getRoutes = async args => {
     log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
-    return queryAPI(URL,args,true).then(res => { return res});
+    return await queryAPI(URL,args,true);
 };
 
-const getArrivals = args => {
+const getArrivals = async args => {
     const URL = config.API_URL + '/arrival-estimates.json';
-    return queryAPI(URL,args).then(res => {return res});
+    return await queryAPI(URL,args);
 };
 
-const getSegments = args => {
+const getSegments = async args => {
     const URL = config.API_URL + '/segments.json';
-    return queryAPI(URL,args).then((res) => {
-        let segments = [];
-        let segment_obj = res['data'];
-        Object.keys(segment_obj).forEach((key) => {
-            segments.push(segment_obj[key]);
-        });
-        res['data'] = segments;
-        return res;
+    const res = await queryAPI(URL,args);
+    let segments = [];
+    let segment_obj = res['data'];
+    Object.keys(segment_obj).forEach((key) => {
+        segments.push(segment_obj[key]);
     });
+    res['data'] = segments;
+    return res;
 };
 
 module.exports = {
