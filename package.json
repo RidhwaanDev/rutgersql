@@ -4,7 +4,7 @@
   "description": "GraphQL API for Rutgers Bus",
   "main": "lambda.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --timeout 15000",
     "start": "nodemon server",
     "build": "babel server.js -d dist"
   },
