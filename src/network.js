@@ -21,7 +21,7 @@ const cleanSegmentsResult = result => {
     const result_sorted = JSON.parse(str);
     let i = 0;
     Object.keys(result_sorted['data']).forEach(key => {
-       i++;
+        i++;
     });
 
     // do regex replace with "key" + key_cnt on each instance of the key
@@ -43,15 +43,15 @@ const cleanSegmentsResult = result => {
     return final_segments;
 };
 
-// query Transloc API
-function queryAPI(URL, args, unnest = false){
-     let my_params = {
+// query Transloc asAPI
+const queryAPI = async (URL, args, unnest = false) => {
+    let my_params = {
         'agencies': '1323',
     };
 
     let segments = false;
 
-    if(!URL.includes("segments")){
+    if (!URL.includes("segments")) {
         my_params['geo_area'] = config.geo_area;
     } else {
         segments = true;
@@ -59,13 +59,13 @@ function queryAPI(URL, args, unnest = false){
         my_params['callback'] = 'call';
     }
     // put args into my_params object
-    if(args != undefined || args != null){
-        Object.keys(args).forEach((key,value) => {
+    if (args != undefined || args != null) {
+        Object.keys(args).forEach((key, value) => {
             my_params[key] = args[key];
         });
     }
     // intercept the request before it is sent. useful for debugging
-    axios.interceptors.request.use(config =>{
+    axios.interceptors.request.use(config => {
         const final_request_url = axios.getUri(config);
         return config;
     }, error => {
@@ -76,50 +76,49 @@ function queryAPI(URL, args, unnest = false){
     const axios_config = {};
     axios_config.headers = config.HEADERS;
     axios_config.params = my_params;
-    if(segments){
+    if (segments) {
         axios_config.responseType = 'arraybuffer';
         axios_config.transformResponse = undefined;
     }
-    return axios.get(URL,axios_config)
-        .then((result) => {
-            log(chalk.green('Success'));
-            if(segments){
-                return cleanSegmentsResult(result);
-            }
-            // Some endpoints on Transloc return "data : { 1323 : {actual data here}}" so we have to unwrap 1323 to get real data.
-            if(unnest){
-                let res = result['data'];
-                let data = (res['data'])['1323'];
-                res['data'] = data;
-                return res;
-            }
-            return result['data'];
-        })
-        .catch((error) => {
-            // https://gist.github.com/fgilio/230ccd514e9381fafa51608fcf137253
-            log(chalk.red('Error'));
-            const pf = chalk.bgRed.black;
-            if (error.response) {
-                log(error.response.data);
-                log(error.response.status);
-                log(error.response.headers);
-            } else if (error.request) {
-                log(error.request);
-            } else {
-                log('Error', error.message);
-            }
-            log(error.config);
-        });
+
+    try {
+        const result = await axios.get(URL, axios_config);
+
+        log(chalk.green('Success'));
+        if (segments) {
+            return cleanSegmentsResult(result);
+        }
+        // Some endpoints on Transloc return "data : { 1323 : {actual data here}}" so we have to unwrap 1323 to get real data.
+        if (unnest) {
+            let res = result['data'];
+            let data = (res['data'])['1323'];
+            res['data'] = data;
+            return res;
+        }
+        return result['data'];
+    } catch (error) {
+        log(chalk.red('Error'));
+        if (error.response) {
+            log(error.response.data);
+            log(error.response.status);
+            log(error.response.headers);
+        } else if (error.request) {
+            log(error.request);
+        } else {
+            log('Error', error.message);
+        }
+        log(error.config);
+    }
 }
 // query google maps API using node.js client library
-const queryMapsAPI = (api_name,args,callback) => {
+const queryMapsAPI = async (api_name,args) => {
     const gmapclient = gmap.createClient({
         key: config.GMAP_API_KEY,
     });
 
     switch(api_name){
         case "directions" :
-            gmapclient.directions({
+            await gmapclient.directions({
                 origin : args.user_pos,
                 destination : args.nearest_stop_pos,
                 mode   : "walking",
@@ -127,9 +126,10 @@ const queryMapsAPI = (api_name,args,callback) => {
                 if(res.status !== 200 || res.json.status !== 'OK') {
                     error(JSON.stringify(res, null, 2));
                 } else {
-                    callback(res);
-                }
-            },);
+                    return res;
+                 }
+                },
+            );
 
             break;
         case "distance":

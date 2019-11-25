@@ -85,27 +85,20 @@ const getDirections = args => {
 };
 
 //TODO need to return more than one stop in case that stop has no vehicles in which case we can discard that.
-const distanceToNearbyStop = user_pos => {
-    return new Promise((resolve,reject) => {
-        nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null)
-            .then(stops => {
-                //get directions from the user to the three stops, lets do one for now.
-                stops.slice(0,4);
-                const stop_pos = new Position(stops[0].location.lat,stops[0].location.lng);
-                return directions({user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()},(res) => {
-                    // distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
-                    if(res == null || res == undefined){
-                        reject(res);
-                    } else {
-                        const distance = res.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
-                        const duration = res.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
-                        const ret_test = {name : stops[0].name, stop_id : stops[0].stop_id, distance, duration};
-                        resolve(ret_test);
-                    }
+const distanceToNearbyStop = async user_pos => {
+    const stops = await nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null);
+    //get directions from the user to the three stops, lets do one for now.
+    stops.slice(0,4);
+    const stop_pos = new Position(stops[0].location.lat,stops[0].location.lng);
+    const res = await directions({user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()});
+    // distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
+    if(res == null || res == undefined) {
+        throw new Error("res is  null or res is undefined");
+    }
 
-                })
-            });
-    });
+    const distance = res.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
+    const duration = res.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
+    const ret_test = {name : stops[0].name, stop_id : stops[0].stop_id, distance, duration};
 };
 
 // Directions from user_pos to the nearest stop
@@ -114,12 +107,12 @@ const distanceToNearbyStop = user_pos => {
 const distance = args => {
 
 };
+
 // directions API
-const directions = (args, callback) => {
+const directions = async (args) => {
     // TODO change to promise
-    return queryMapsAPI("directions",args, function(res){
-        callback(res);
-    });
+    const res = await queryMapsAPI("directions",args);
+    return res;
 };
 // geocode API
 const geocode = args => {
