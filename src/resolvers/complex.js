@@ -7,7 +7,7 @@ const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./
 
 const complex = {
     vehiclesByName : (args,context) => {
-         return getVehiclesByName(args);
+        return getVehiclesByName(args);
     },
     segmentsByName : (args,context) => {
         return getSegmentsByName(args);
@@ -25,191 +25,172 @@ const complex = {
 
 
 // take in lat,lng and returns the nearest stops
-const getNearbyStops = (args) => {
+const getNearbyStops = async (args) => {
     // ths location of the person
     const userPos = new Position(args['lat'],args['lng']);
-    return getStops(null)
-        .then(res => {
-            if(res == undefined){
-                log("we have a problem");
-            }
-            const stops = res['data'];
-            // add distance to each stop object
-            stops.forEach(it => {
-                const stopPos = new Position(it.location.lat, it.location.lng);
-                const stop_distance = Position.distance(userPos, stopPos);
-                it['distance'] = stop_distance;
-            });
-            // then sort all the objects by distance
-            stops.sort((a,b) => {
-                return a['distance'] - b['distance']
-            });
+    const res = await getStops(null);
 
-            // all the routes that each stop has. Set instead of array because we dont want duplicate elements
-            let routes = new Set();
+    if(res == undefined){
+        log("we have a problem");
+    }
+    const stops = res['data'];
+    // add distance to each stop object
+    stops.forEach(it => {
+        const stopPos = new Position(it.location.lat, it.location.lng);
+        const stop_distance = Position.distance(userPos, stopPos);
+        it['distance'] = stop_distance;
+    });
+    // then sort all the objects by distance
+    stops.sort((a,b) => {
+        return a['distance'] - b['distance']
+    });
 
-            // add each stops' routes to the routes obj
-            stops.forEach(stop =>{
-                const rts = stop['routes'];
-                for(let i = 0; i < rts.length; i++){
-                    routes.add(rts[i]);
-                }
-            });
+    // all the routes that each stop has. Set instead of array because we dont want duplicate elements
+    let routes = new Set();
 
-            let temp = [];
-            routes.forEach(it => temp.push(it));
-            const str = temp.join(',');
+    // add each stops' routes to the routes obj
+    stops.forEach(stop =>{
+        const rts = stop['routes'];
+        for(let i = 0; i < rts.length; i++){
+            routes.add(rts[i]);
+        }
+    });
 
-            // now call arrival estimates with all the routes for only ten stops.
-            for (let i = 0; i < 10; i++) {
-                getArrivals({str, stops: (stops[i])['stop_id']}).then(res => {
-                    if(typeof res === "undefined" || typeof res.data[0] === "undefined" || typeof stops === "undefined" ){
-                        log('arrivals undefined');
-                        return;
-                    } else {
-                        stops[i].arrivals = res.data[0].arrivals;
-                    }
-                });
-            }
+    let temp = [];
+    routes.forEach(it => temp.push(it));
+    const str = temp.join(',');
 
-            return stops;
-        })
-        .catch(error => {
-            log("There has been an error getting nearby stops");
-            log(error);
-        })
+    // TODO change for all stops
+    // now call arrival estimates with all the routes for only ten stops.
+    for (let i = 0; i < 10; i++) {
+        const arriv = await getArrivals({str, stops: (stops[i])['stop_id']});
+        if(arriv === undefined || arriv.data[0] === undefined || stops === undefined){
+            log('arrivals undefined');
+            return;
+        } else {
+            stops[i].arrivals = arriv.data[0].arrivals;
+        }
+    }
+
+    return stops;
 };
 // takes the route name like 'A' or 'LX' and gets the segments.
-const getSegmentsByName = (args) => {
+const getSegmentsByName = async (args) => {
     // get route_name from args
     const route_name = args['name'];
-    return getRoutes(null)
-        .then((response) => {
-            const res = response['data'];
-            const map = {};
-            res.forEach((it) => {map[it.long_name] = it.route_id});
-            globalCache.set(config.ROUTE_TO_NAME_KEY,map);
-            const params = {routes: map[route_name]};
-            return getSegments(params);
-        })
-        .then((segments) => {
-            return segments;
-        });
+    const response = await getRoutes(null);
+    const res = response['data'];
+    const map = {};
+
+    res.forEach((it) => {map[it.long_name] = it.route_id});
+
+    // need to test this
+    globalCache.set(config.ROUTE_TO_NAME_KEY,map);
+
+    const params = {routes: map[route_name]};
+    const segments = await getSegments(params);
+    return segments;
 };
 
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.
-const getVehiclesByName = (args) => {
+const getVehiclesByName = async (args) => {
     // get route_name from args
     const route_name = args['name'];
-    return getRoutes(null)
-        .then((response) => {
-            // get all the routes and map the route id with its name. For example : ( "4040102" : "Route A )
-            const res = response['data'];
-            const map = {};
-            // map route_id to name
-            res.forEach((it) => {map[it.route_id] = it.long_name});
-            return {res, map}
-            // get all the vehicles and filter the ones where the route_id in map returns the route name that we want.
+    const routes = await getRoutes(null);
+    const res = routes['data'];
+    const map = {};
 
-        }) // this is its own Promise block for readbility.
-        .then((vehicles_with_map) => {
-            const map = vehicles_with_map.map;
-            return getVehicles()
-                .then((response) => {
-                    let vehicles = response['data'];
-                    const vehicles_filtered = vehicles.filter(it => map[it.route_id] === route_name);
-                    return vehicles_filtered;
-                });
-        });
+    // map route_id to name
+    res.forEach((it) => {map[it.route_id] = it.long_name});
+    const vehicles = await getVehicles();
+    let v = vehicles['data'];
+    const vehicles_filtered = v.filter(it => map[it.route_id] === route_name);
+    return vehicles_filtered;
 };
 
-// get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, also get stops for the routes;
-const getRoutesByName = (args) => {
+// get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, then get stops for the routes;
+const getRoutesByName = async (args) => {
     const rt_name = args['name'];
-    return getRoutes(null)
-        .then((response) => {
-            const res = response['data'];
-            const route_obj = res.filter((it) => (it.long_name === rt_name));
-            const rt_id = (route_obj['0']).route_id;
-            return getVehiclesByName(args)
-                .then((vehicles) => {
-                    // sort the arrivals of each vehicle
-                    vehicles.forEach((vehicle) => {
-                        const arrival_est = vehicle['arrival_estimates'];
-                        arrival_est.sort((a,b) => {
-                            return a['arrival_at'] - b['arrival_at'];
-                        });
-                    });
 
-                    // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
-                    vehicles.sort((a,b) => { return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0] });
-                    // combine route_obj and response
-                    const result = {...route_obj, vehicles, rt_id};
-                    return result;
-                });
-        })
-        // give each stop_id its stop name.
-        .then((response) => {
-            return getStops(null)
-                .then((stops_response) => {
-                    const stop_id_2_name = {};
-                    // map each stop_id from stops to its name
-                    const stops = stops_response['data'];
-                    stops.forEach((stop) => { stop_id_2_name[stop['stop_id']] = stop['name']});
+    const response = await getRoutes(null);
+    const res = response['data'];
 
-                    // get the stops only on the route passed in
-                    const stops_filtered  = new Array();
+    const route_obj = res.filter((it) => (it.long_name === rt_name));
+    const rt_id = (route_obj['0']).route_id;
 
-                    // TODO clean this up
-                    stops.forEach((stop) => {
-                        stop.routes.forEach(route => {
-                            if(route === response.rt_id){
-                                stops_filtered.push(stop);
-                                return;
-                            }
-                        });
-                    });
+    const vehicles = await getVehiclesByName(args);
 
-                    response['vehicles'].forEach((vehicle) => {
-                        // add stop name to each vehicle estimate
-                        vehicle['arrival_estimates'].forEach((est) => {
-                            est['name'] = stop_id_2_name[est['stop_id']];
-                        });
-                    });
-                    (response['0'])['stops'] = stops_filtered;
-                    return response;
-                })
-        })
-        .then(response => {
-            const stops_filtered = response['0'].stops;
-            const stop_id_to_arrivals = {};
-            // TODO this is really slow, need to speed up
-            return getArrivals({routes: response.rt_id})
-                .then(res => {
-                    const data = res['data'];
-                    // map each stop_id to its corresponding arrivals
-                    data.forEach( arrival => {
-                        stop_id_to_arrivals[arrival.stop_id] = arrival.arrivals;
-                    });
-
-                    // put arrival estimates for each stop using the map (stop_id_to_arrivals);
-                    stops_filtered.forEach(stop => {
-                        stop['arrivals']  = stop_id_to_arrivals[stop.stop_id];
-                    });
-                    (response['0'])['stops'] = stops_filtered;
-                   return response;
-                });
-        })
-        .then(final_result => {
-            // segments is useless in this case and clutters the JSON output.
-            if(final_result['0'] != undefined){
-                delete (final_result['0'])['segments'];
-            }
-
-            let vehicles = final_result['vehicles'];
-            // combine the route object and the vehicles object
-            return { ...final_result['0'],vehicles};
+    // sort the arrivals of each vehicle
+    vehicles.forEach((vehicle) => {
+        const arrival_est = vehicle['arrival_estimates'];
+        arrival_est.sort((a, b) => {
+            return a['arrival_at'] - b['arrival_at'];
         });
+    });
+
+    // sort the buses based on arrival times of the first arrival_estimate cuz those are sorted already.
+    vehicles.sort((a, b) => {
+        return (a['arrival_estimates'])[0] - (b['arrival_estimates'])[0]
+    });
+    // combine route_obj and response
+    const result = {...route_obj, vehicles, rt_id};
+    const stops_response = await getStops(null);
+
+    // give each stop_id its stop name.
+    const stop_id_2_name = {};
+    // map each stop_id from stops to its name
+    const stops = stops_response['data'];
+    stops.forEach((stop) => {
+        stop_id_2_name[stop['stop_id']] = stop['name']
+    });
+
+    // get the stops only on the route passed in
+    const stops_filtered = [];
+
+    // TODO clean this up
+    stops.forEach((stop) => {
+        stop.routes.forEach(route => {
+            if (route === result.rt_id) {
+                stops_filtered.push(stop);
+                return;
+            }
+        });
+    });
+
+    result['vehicles'].forEach((vehicle) => {
+        // add stop name to each vehicle estimate
+        vehicle['arrival_estimates'].forEach((est) => {
+            est['name'] = stop_id_2_name[est['stop_id']];
+        });
+    });
+
+    (result['0'])['stops'] = stops_filtered;
+
+    const res_stops_filtered = result['0'].stops;
+    const stop_id_to_arrivals = {};
+
+    // TODO this is really slow, need to speed up
+    const res_arrivals = await getArrivals({routes: response.rt_id});
+    const data = res_arrivals['data'];
+    // map each stop_id to its corresponding arrivals
+    data.forEach(arrival => {
+        stop_id_to_arrivals[arrival.stop_id] = arrival.arrivals;
+    });
+
+    // put arrival estimates for each stop using the map (stop_id_to_arrivals);
+    res_stops_filtered.forEach(stop => {
+        stop['arrivals'] = stop_id_to_arrivals[stop.stop_id];
+    });
+
+    (result['0'])['stops'] = res_stops_filtered;
+    // segments is useless in this case and clutters the JSON output.
+    if (result['0'] != undefined) {
+        delete (result['0'])['segments'];
+    }
+
+    let res_vehicles = (result['0'])['vehicles'];
+    // combine the route object and the vehicles object
+    return {...result['0'], res_vehicles};
 };
 
 // First get all the routes that stop at that stop.
@@ -227,7 +208,7 @@ const getStopsWithRoutes = () => {
      *
      */
 
-     // get all stops
+        // get all stops
     const res = getStops(null)
             .then(stops => {
                 return stops;
