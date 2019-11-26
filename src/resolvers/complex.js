@@ -196,8 +196,7 @@ const getRoutesByName = async (args) => {
 // First get all the routes that stop at that stop.
 // Then from all of those routes, get all the vehicles and sort by the arrival time to that stop.
 
-const getStopsWithRoutes = () => {
-
+const getStopsWithRoutes = async () => {
     /**
      *  get all stops [stops]
      *  get all routes [routes]
@@ -208,66 +207,43 @@ const getStopsWithRoutes = () => {
      *
      */
 
-        // get all stops
-    const res = getStops(null)
-            .then(stops => {
-                return stops;
-            })
-            .then(stops => {
-                return getRoutes(null).then(routes => {
-                    const combined = {stops,routes};
-                    return combined;
-                });
-            })
-            .then(stops_routes => {
-                return getVehicles([config.route_id_test,config.route_id_test_2]).then(vehicles => {
-                    const combined = {vehicles,...stops_routes};
-                    return combined;
-                });
-            })
-            .then(combined => {
-                // combined has all routes, all stops, and all vehicles.
-                const routes = (combined['routes'])['data'];
-                const stops = (combined['stops'])['data'];
-                const vehicles = (combined['vehicles'])['data'];
-                // log(vehicles);
+    const stops = await getStops();
+    const routes = await getRoutes();
+    const vehicles = await getVehicles();
 
-                // map each stop to its routes
-                let stopid_to_routeid = {};
-                stops.forEach(s => {
-                    routes.forEach(r => {
-                        const route_stops = r['stops'];
-                        const rt_name = r['long_name'];
-                        const filtered = route_stops.filter(stop => stop === s['stop_id']);
-                        //  stop is on the route
-                        if(filtered.length >= 1){
-                            if(stopid_to_routeid[s['stop_id']] === undefined){
-                                stopid_to_routeid[s['stop_id']] = [];
-                            } else {
-                                (stopid_to_routeid[s['stop_id']]).push(r['route_id']);
-                            }
-                        }
-                    });
-                });
+    let stopid_to_routeid = {};
 
-                // for each stop
-                Object.keys(stopid_to_routeid).forEach( stop_id => {
-                    const buses = vehicles.filter(b => stopid_to_routeid[stop_id].includes(b['route_id']));
-                    // buses is all the vehicles coming to the stop.
-                    buses.sort((a,b) => {
-                        return (a['arrival_estimates'])['arrival_at'] - (b['arrival_estimates'])['arrival_at']
-                    });
-                    stopid_to_routeid[stop_id] = buses;
-                });
-                // now add all buses to their respective stops in the stops object
-                stops.forEach(stop => {
-                    stop['vehicles'] = stopid_to_routeid[stop['stop_id']];
-                });
-                return stops;
-            });
-    return res.then(final_res => {
-        return final_res
+    stops.forEach(s => {
+        routes.forEach(r => {
+            const route_stops = r['stops'];
+            const rt_name = r['long_name'];
+            const filtered = route_stops.filter(stop => stop === s['stop_id']);
+            //  stop is on the route
+            if(filtered.length >= 1){
+                if(stopid_to_routeid[s['stop_id']] === undefined){
+                    stopid_to_routeid[s['stop_id']] = [];
+                } else {
+                    (stopid_to_routeid[s['stop_id']]).push(r['route_id']);
+                }
+            }
+        });
     });
+
+    // for each stop
+    Object.keys(stopid_to_routeid).forEach( stop_id => {
+        const buses = vehicles.filter(b => stopid_to_routeid[stop_id].includes(b['route_id']));
+        // buses is all the vehicles coming to the stop.
+        buses.sort((a,b) => {
+            return (a['arrival_estimates'])['arrival_at'] - (b['arrival_estimates'])['arrival_at']
+        });
+        stopid_to_routeid[stop_id] = buses;
+    });
+    // now add all buses to their respective stops in the stops object
+    stops.forEach(stop => {
+        stop['vehicles'] = stopid_to_routeid[stop['stop_id']];
+    });
+
+    return stops;
 };
 
 

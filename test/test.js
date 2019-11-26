@@ -1,8 +1,7 @@
 require('dotenv').config();
 const assert = require('assert');
-const routes = [];
-
 const {baseResolvers} = require('../src/resolvers/base');
+const {complexResolvers} = require('../src/resolvers/complex');
 const log = console.log;
 
 // test base resolvers
@@ -13,7 +12,8 @@ describe('base_resolvers', () => {
             assert(routes !== null);
             assert(routes !== undefined);
             assert(routes['data'] !== null);
-            assert(routes['data'] !== undefined)
+            assert(routes['data'] !== undefined);
+            assert((routes['data'])['1323'].length > 1);
         });
     });
 
@@ -36,7 +36,8 @@ describe('base_resolvers', () => {
             assert(vehicles !== undefined);
             assert(vehicles['data'] !== null);
             assert(vehicles['data'] !== undefined);
-            assert(vehicles['data'].length > 1);
+            assert(vehicles['data'].length != 0);
+            assert(vehicles['data'].length > 10);
         });
     });
 
@@ -67,7 +68,6 @@ describe('base_resolvers', () => {
 // test complex resolvers
 describe('complex_resolvers', () => {
     describe('getVehiclesByName', () => {
-
     });
 
     describe('getRoutesByName', () => {

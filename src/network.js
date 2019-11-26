@@ -109,7 +109,7 @@ const queryAPI = async (URL, args, unnest = false) => {
         }
         log(error.config);
     }
-}
+};
 // query google maps API using node.js client library
 const queryMapsAPI = async (api_name,args) => {
     const gmapclient = gmap.createClient({

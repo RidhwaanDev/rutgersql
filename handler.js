@@ -6,3 +6,6 @@ module.exports.query = (event, context) => {
     // send lambda to our express server
     awsExpress.proxy(server, event, context);
 };
+
+
+
