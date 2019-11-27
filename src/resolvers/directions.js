@@ -23,6 +23,9 @@ const log = console.log;
  find all vehicles for STOP_A that go to STOP_B => V
  return all V
  **/
+const segmentsAB = async (srcpos, destpos ) => {
+
+};
 
 const getDirections = async args => {
     // user position, and final destination pos
@@ -37,6 +40,7 @@ const getDirections = async args => {
     if (src === undefined || dest === undefined) {
         throw new Error("could not get src and dst")
     }
+    
     // combine into one object
     const stops_src_dest = {src, dest};
 

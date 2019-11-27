@@ -2,6 +2,8 @@ module.exports = {
     API_URL: 'https://transloc-api-1-2.p.rapidapi.com',
     geo_area: '40.506831,-74.456645|15000',
     stop_id_test : '4229492',
+    route_h : 4012628,
+    route_lx : 4012630,
     agency: 1323,
     /** HOW TO PUT YOUR API_KEY
      * First Way: Just put your API_KEY in directly
@@ -35,4 +37,3 @@ module.exports = {
         lsc_lng: -74.436665,
     }
 };
-

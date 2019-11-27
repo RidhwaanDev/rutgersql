@@ -23,7 +23,6 @@ const complex = {
     },
 };
 
-
 // take in lat,lng and returns the nearest stops
 const getNearbyStops = async (args) => {
     // ths location of the person
@@ -75,6 +74,7 @@ const getNearbyStops = async (args) => {
     return stops;
 };
 // takes the route name like 'A' or 'LX' and gets the segments.
+// TODO need to fix. gives segments for any input. Why???
 const getSegmentsByName = async (args) => {
     // get route_name from args
     const route_name = args['name'];
@@ -111,15 +111,12 @@ const getVehiclesByName = async (args) => {
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, then get stops for the routes;
 const getRoutesByName = async (args) => {
     const rt_name = args['name'];
-
     const response = await getRoutes(null);
     const res = response['data'];
-
     const route_obj = res.filter((it) => (it.long_name === rt_name));
     const rt_id = (route_obj['0']).route_id;
 
     const vehicles = await getVehiclesByName(args);
-
     // sort the arrivals of each vehicle
     vehicles.forEach((vehicle) => {
         const arrival_est = vehicle['arrival_estimates'];
@@ -188,9 +185,12 @@ const getRoutesByName = async (args) => {
         delete (result['0'])['segments'];
     }
 
-    let res_vehicles = (result['0'])['vehicles'];
-    // combine the route object and the vehicles object
-    return {...result['0'], res_vehicles};
+    result['0'].vehicles = result.vehicles;
+
+    // remove duplicate vehicles array
+    delete(result.vehicles);
+
+    return result['0']
 };
 
 // First get all the routes that stop at that stop.
@@ -247,4 +247,6 @@ const getStopsWithRoutes = async () => {
 };
 
 
-module.exports = complex;
+module.exports = {
+    complexResolvers: complex
+};

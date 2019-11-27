@@ -84,7 +84,6 @@ const queryAPI = async (URL, args, unnest = false) => {
     try {
         const result = await axios.get(URL, axios_config);
 
-        log(chalk.green('Success'));
         if (segments) {
             return cleanSegmentsResult(result);
         }

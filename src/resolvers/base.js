@@ -24,7 +24,7 @@ const base = {
 };
 
 const getVehicles = async () => {
-    log(chalk.green("getting vehicles"));
+    // log(chalk.green("getting vehicles"));
     const URL = config.API_URL + '/vehicles.json';
     const my_params  = {
         // if routes is undefined set key as null otherwise join it ( changes it from routes : [a,b,c] to routes : "a,b,c". ( Array -> Single String basically)
@@ -37,14 +37,14 @@ const getVehicles = async () => {
 };
 
 const getStops = async args => {
-    log(chalk.cyan("getting stops"));
+    // log(chalk.cyan("getting stops"));
     const URL = config.API_URL + '/stops.json';
     return await queryAPI(URL,args);
 };
 
 // Needs to be unnested.
 const getRoutes = async args => {
-    log(chalk.magenta("getting routes"));
+    // log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
     return await queryAPI(URL,args,true);
 };
