@@ -14,12 +14,14 @@ const cleanSegmentsResult = result => {
     const str = b.toString();
     const regexp = /"(\d{9})"/;
 
-    // replace each 9 digit number (the keys to each segment) with a random key. 
+    // replace each 9 digit number (the keys to each segment) with a random key.
     // This prevents JSON.parse from sorting the keys and messing with the segments
 
     // count the keys in the sorted/messed up object
     const result_sorted = JSON.parse(str);
+
     let i = 0;
+
     Object.keys(result_sorted['data']).forEach(key => {
         i++;
     });
@@ -138,7 +140,7 @@ const queryMapsAPI = async (api_name,args) => {
     }
 };
 
-const queryRutgersPlacesAPI = () => {
+const queryAlerts = async () => {
 
 };
 

@@ -5,9 +5,9 @@ const {complexResolvers} = require('../src/resolvers/complex');
 const log = console.log;
 
 // test base resolvers
-describe('resolvers', () => {
-    describe('routes', () => {
-        it('it should get all the routes', async () => {
+describe('resolvers', function(){
+    describe('routes',function(){
+        it('it should get all the routes', async function(){
             const routes = await baseResolvers.routes();
             assert(routes !== null);
             assert(routes !== undefined);
@@ -17,8 +17,8 @@ describe('resolvers', () => {
         });
     });
 
-    describe('stops', () => {
-        it('it should get all the stops', async () => {
+    describe('stops', function(){
+        it('it should get all the stops', async function(){
             const stops = await baseResolvers.stops();
             assert(stops !== null);
             assert(stops !== undefined);
@@ -29,8 +29,8 @@ describe('resolvers', () => {
         });
     });
 
-    describe('vehicles', async () => {
-        it('it should get all the vehicles', async () => {
+    describe('vehicles', function() {
+        it('it should get all the vehicles', async function() {
             const vehicles = await baseResolvers.vehicles();
             assert(vehicles !== null);
             assert(vehicles !== undefined);
@@ -42,8 +42,8 @@ describe('resolvers', () => {
     });
 
 
-    describe('arrivals', async () => {
-        it('it should get all the vehicles', async () => {
+    describe('arrivals', function() {
+        it('it should get all the vehicles', async function(){
             const arrivals = await baseResolvers.arrivals();
             assert(arrivals !== null);
             assert(arrivals !== undefined);
@@ -53,8 +53,8 @@ describe('resolvers', () => {
         });
     });
 
-    describe('segments', async () => {
-        it('it should get all the vehicles', async () => {
+    describe('segments', async function () {
+        it('it should get all the vehicles', async function (){
             const segments = await baseResolvers.segments();
             assert(segments !== null);
             assert(segments !== undefined);
@@ -64,8 +64,8 @@ describe('resolvers', () => {
         });
     });
 
-    describe('getVehiclesByName', async () => {
-        it('it should get all the vehicles by name. should return ALL routes. see test.js', async () => {
+    describe('getVehiclesByName', async function()  {
+        it('it should get all the vehicles by name. should return ALL routes. see test.js', async function(){
             const routes = ["Route LX", "Route A", "Route H", "Route F", "Route EE", "Route B", "Route REXB", "Route REXL"];
             for (let i = 0; i < routes.length; i++) {
                 const vehicles = await complexResolvers.vehiclesByName({name: routes[i]});
@@ -76,8 +76,8 @@ describe('resolvers', () => {
         });
     });
 
-    describe('getRoutesByName', async () => {
-        it('it should get all the vehicles by name. should return ALL routes. see test.js', async () => {
+    describe('getRoutesByName', async function() {
+        it('it should get all the vehicles by name. should return ALL routes. see test.js', async function(){
             const routes = ["Route LX", "Route A", "Route H", "Route F", "Route EE", "Route B", "Route REXB", "Route REXL"];
             for (let i = 0; i < routes.length; i++) {
                 const data = await complexResolvers.routesByName({name: routes[i]});
