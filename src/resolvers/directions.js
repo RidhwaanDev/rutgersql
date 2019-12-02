@@ -37,7 +37,7 @@ const getDirections = async args => {
     // get the closes stop to the dest
     const dest = await distanceToNearbyStop(dest_pos);
 
-    if (src === undefined || dest === undefined) {
+    if (!src || !dest) {
         throw new Error("could not get src and dst")
     }
     
@@ -84,7 +84,7 @@ const getDirections = async args => {
 //TODO need to return more than one stop in case that stop has no vehicles in which case we can discard that.
 const distanceToNearbyStop = async user_pos => {
     const stops = await nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null);
-    if(stops === undefined || stops === null){
+    if(!stops){
         throw new Error("Error in getting nearbyStops in distanceToNearbyStop");
     }
     //get directions from the user to the three stops, lets do one for now.
@@ -92,7 +92,7 @@ const distanceToNearbyStop = async user_pos => {
     const stop_pos = new Position(stops[0].location.lat,stops[0].location.lng);
     const res = await directions({user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()});
     // distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
-    if(res === null || res === undefined) {
+    if(!res) {
         throw new Error("res is  null or res is undefined");
     }
 

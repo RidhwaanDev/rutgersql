@@ -29,7 +29,7 @@ const getNearbyStops = async (args) => {
     const userPos = new Position(args['lat'],args['lng']);
     const res = await getStops(null);
 
-    if(res == undefined){
+    if(!res){
         log("we have a problem");
     }
     const stops = res['data'];
@@ -63,7 +63,7 @@ const getNearbyStops = async (args) => {
     // now call arrival estimates with all the routes for only ten stops.
     for (let i = 0; i < 10; i++) {
         const arriv = await getArrivals({str, stops: (stops[i])['stop_id']});
-        if(arriv === undefined || arriv.data[0] === undefined || stops === undefined){
+        if(!arriv || !arriv.data[0] || !stops){
             log('arrivals undefined');
             return;
         } else {

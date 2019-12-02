@@ -61,7 +61,7 @@ const queryAPI = async (URL, args, unnest = false) => {
         my_params['callback'] = 'call';
     }
     // put args into my_params object
-    if (args != undefined || args != null) {
+    if (args) {
         Object.keys(args).forEach((key, value) => {
             my_params[key] = args[key];
         });
