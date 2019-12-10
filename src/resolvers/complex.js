@@ -160,7 +160,6 @@ const getRoutesByName = async (args) => {
             est['name'] = stop_id_2_name[est['stop_id']];
         });
     });
-
     (result['0'])['stops'] = stops_filtered;
 
     const res_stops_filtered = result['0'].stops;

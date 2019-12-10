@@ -12,26 +12,26 @@ class BusGraph {
        }
     }
     // stop_a and stop_b should be id's for the stops
-    addEdge(stop_a, stop_b, dist_matrix){
+    async addEdge(stop_a, stop_b, dist_matrix){
         // if(stop_a instanceof GNode && stop_b instanceof GNode) {
         //     this.graph.addEdge(stop_a,stop_b,dist_matrix);
         // }
          this.graph.addEdge(stop_a,stop_b,dist_matrix);
     }
 
-    topSort(){
+    async topSort(){
         return this.graph.topologicalSort();
     }
 
-    stringify(){
+    async stringify(){
         return this.graph.serialize();
     }
 
-    dfs(){
+    async dfs(){
         return this.graph.depthFirstSearch();
     }
 
-    adjStop(stop){
+    async adjStop(stop){
         return this.graph.adjacent(stop)
     }
 }

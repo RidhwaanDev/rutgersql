@@ -5,7 +5,6 @@ const chalk  = require('chalk');
 const graphqlHTTP  = require("express-graphql");
 const schema  = require('./schema');
 const root  = require( './rootresolver');
-
 const app = express();
 
 app.use('/', graphqlHTTP({

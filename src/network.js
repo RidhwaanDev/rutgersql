@@ -6,43 +6,11 @@ const chalk = require('chalk'); // fun colors for the terminal.
 const log = console.log;
 const error = console.error;
 
-// When using axios to call the segments API the result is sorted based on the keys of each segment since each key is a number.
-// This is bad because when we draw the segments we want the segments to be in the original order so it can be drawn properly.
-// Here we get the raw string from the segments API, replace each key with a some "key" and a number, then call JSON.parse, then return it
-const cleanSegmentsResult = result => {
-    const b = new Buffer(result.data,'binary');
-    const str = b.toString();
-    const regexp = /"(\d{9})"/;
-
-    // replace each 9 digit number (the keys to each segment) with a random key.
-    // This prevents JSON.parse from sorting the keys and messing with the segments
-
-    // count the keys in the sorted/messed up object
-    const result_sorted = JSON.parse(str);
-
-    let i = 0;
-
-    Object.keys(result_sorted['data']).forEach(key => {
-        i++;
-    });
-
-    // do regex replace with "key" + key_cnt on each instance of the key
-    let key_cnt = 0;
-    let prev = str;
-    let running_str = '';
-    while(prev.match(regexp) != null){
-        running_str = prev.replace(regexp,`\"segment${key_cnt}\"`);
-        prev = running_str;
-        key_cnt++;
-    }
-    // compare keys in the unsorted/cleaned object
-    let j = 0;
-    const final_segments = JSON.parse(running_str);
-    Object.keys(final_segments).forEach(key => {
-        j++;
-    });
-
-    return final_segments;
+const get = async url => {
+  axios.getUri(url)
+      .then(res => {
+        log(res);
+      });
 };
 
 // query Transloc asAPI
@@ -85,10 +53,6 @@ const queryAPI = async (URL, args, unnest = false) => {
 
     try {
         const result = await axios.get(URL, axios_config);
-
-        if (segments) {
-            return cleanSegmentsResult(result);
-        }
         // Some endpoints on Transloc return "data : { 1323 : {actual data here}}" so we have to unwrap 1323 to get real data.
         if (unnest) {
             let res = result['data'];
@@ -131,7 +95,6 @@ const queryMapsAPI = async (api_name,args) => {
                  }
                 },
             );
-
             break;
         case "distance":
             break;
@@ -140,11 +103,8 @@ const queryMapsAPI = async (api_name,args) => {
     }
 };
 
-const queryAlerts = async () => {
-
-};
-
 module.exports = {
     queryAPI,
     queryMapsAPI,
+    get,
 };
