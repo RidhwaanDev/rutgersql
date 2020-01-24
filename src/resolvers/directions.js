@@ -1,6 +1,6 @@
 // resolvers for directions and other
 const {queryMapsAPI} = require('../network');
-const {nearbyStops,stopsWithRoutes} = require('./complex');
+const {nearbyStops, stopsWithRoutes} = require('./complex').complexResolvers;
 
 // TODO simplify Position object
 const Position = require('../structures/position');
@@ -15,20 +15,12 @@ const Directions = {
 
 const log = console.log;
 
-/**
- input: lat,lng of user => (pos), String of destination => (dest) => geocode(dest) => lat,lng dest
 
- procedure:
- find closest stop to (user) => STOP_A
- find closest stop to (dest) => STOP_B
- find all vehicles for STOP_A that go to STOP_B => V
- return all V
- **/
 
+// return segments of a route only from srcpos to destpos
 const segmentsAB = async (srcpos, destpos ) => {
 
 };
-
 
 const getDirections = async args => {
     // user position, and final destination pos
@@ -36,7 +28,7 @@ const getDirections = async args => {
     const dest_pos = new Position(args.dest_lat, args.dest_lng);
     // get the closest stop to the user
     const src = await distanceToNearbyStop(user_pos);
-    // get the closes stop to the dest
+    // get the closest stop to the dest
     const dest = await distanceToNearbyStop(dest_pos);
 
     if (!src || !dest) {
@@ -78,7 +70,7 @@ const getDirections = async args => {
         end_address: stops_src_dest.dest.name,
         vehicles: vres,
     };
-};
+}
 
 //TODO need to return more than one stop in case that stop has no vehicles in which case we can discard that.
 const distanceToNearbyStop = async user_pos => {
@@ -89,21 +81,22 @@ const distanceToNearbyStop = async user_pos => {
     //get directions from the user to the three stops, lets do one for now.
     stops.slice(0,4);
     const stop_pos = new Position(stops[0].location.lat,stops[0].location.lng);
-    const res = await directions({user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()});
-    // distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
-    if(!res) {
+    const data = await directions({user_pos: user_pos.toString(), nearest_stop_pos: stop_pos.toString()});
+
+    if (!data) {
         throw new Error("res is  null or res is undefined");
     }
+    const distance = data.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
+    const duration = data.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
+    return {name: stops[0].name, stop_id: stops[0].stop_id, distance, duration};
 
-    const distance = res.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
-    const duration = res.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
-    return {name : stops[0].name, stop_id : stops[0].stop_id, distance, duration};
-};
+}
 
 // directions API
 const directions = async (args) => {
     return await queryMapsAPI("directions", args);
 };
+
 
 // distance matrix API
 const distance = async args => {};

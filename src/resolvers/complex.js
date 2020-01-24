@@ -59,13 +59,12 @@ const getNearbyStops = async (args) => {
     routes.forEach(it => temp.push(it));
     const str = temp.join(',');
 
-    // TODO change for all stops
+    // TODO arrival is undefined sometimes
     // now call arrival estimates with all the routes for only ten stops.
     for (let i = 0; i < 10; i++) {
         const arriv = await getArrivals({str, stops: (stops[i])['stop_id']});
         if(!arriv || !arriv.data[0] || !stops){
             log('arrivals undefined');
-            return;
         } else {
             stops[i].arrivals = arriv.data[0].arrivals;
         }
