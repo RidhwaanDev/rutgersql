@@ -8,7 +8,7 @@ module.exports = buildSchema(`
 		stops : StopResult
 		arrivals(routes : [String], stops : [String]) : ArrivalEst_Result
 		vehicles(routes: [String]) : VehiclesResult
-		segments(route : String!) : SegmentsResult
+		segments(route : String) : SegmentsResult
 		vehiclesByName(name: String!) : [Vehicle]
 		segmentsByName(name: String!) : SegmentsResult
 		routesByName(name: String!) : RoutesByNameResult

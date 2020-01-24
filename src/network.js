@@ -19,12 +19,9 @@ const queryAPI = async (URL, args, unnest = false) => {
         'agencies': '1323',
     };
 
-    let segments = false;
-
     if (!URL.includes("segments")) {
         my_params['geo_area'] = config.geo_area;
     } else {
-        segments = true;
         delete my_params['geo_area'];
         my_params['callback'] = 'call';
     }
@@ -34,6 +31,7 @@ const queryAPI = async (URL, args, unnest = false) => {
             my_params[key] = args[key];
         });
     }
+
     // intercept the request before it is sent. useful for debugging
     axios.interceptors.request.use(config => {
         const final_request_url = axios.getUri(config);
@@ -46,10 +44,6 @@ const queryAPI = async (URL, args, unnest = false) => {
     const axios_config = {};
     axios_config.headers = config.HEADERS;
     axios_config.params = my_params;
-    if (segments) {
-        axios_config.responseType = 'arraybuffer';
-        axios_config.transformResponse = undefined;
-    }
 
     try {
         const result = await axios.get(URL, axios_config);

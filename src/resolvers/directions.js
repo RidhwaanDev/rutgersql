@@ -2,8 +2,9 @@
 const {queryMapsAPI} = require('../network');
 const {nearbyStops,stopsWithRoutes} = require('./complex');
 
+// TODO simplify Position object
 const Position = require('../structures/position');
-// resolvers for Google Maps API
+
 const Directions = {
     distance      : args => {},
     geocode       : args => {},
@@ -23,15 +24,16 @@ const log = console.log;
  find all vehicles for STOP_A that go to STOP_B => V
  return all V
  **/
+
 const segmentsAB = async (srcpos, destpos ) => {
 
 };
+
 
 const getDirections = async args => {
     // user position, and final destination pos
     const user_pos = new Position(args.user_lat, args.user_lng);
     const dest_pos = new Position(args.dest_lat, args.dest_lng);
-
     // get the closest stop to the user
     const src = await distanceToNearbyStop(user_pos);
     // get the closes stop to the dest
@@ -40,16 +42,13 @@ const getDirections = async args => {
     if (!src || !dest) {
         throw new Error("could not get src and dst")
     }
-    
+
     // combine into one object
     const stops_src_dest = {src, dest};
-
     // routes coming to the stop
     const stops = await stopsWithRoutes(null, null);
-    // find the routes that go to dest from src  ( Buell to LSC e.g)
+    // find the routes that go to dest from src  (Buell to LSC e.g)
     const stop_with_vehicles_at_src = (stops.filter(it => it.stop_id === stops_src_dest.src.stop_id))[0];
-
-    // vehicles at src and dest
 
     // all the vehicles coming into src stop
     const vsrc = stop_with_vehicles_at_src.vehicles;
@@ -66,13 +65,13 @@ const getDirections = async args => {
             }
         });
     });
-
+    // sort by arrival estimates. someone double check if its already sorted
     vres.sort((a, b) => {
         return a.arrival_estimates[0].arrival_at - b.arrival_estimates[0].arrival_at;
     });
 
     return {
-        // distannce and duration from user_pos to src
+        // distance and duration from user_pos to src
         distance: stops_src_dest.src.distance,
         duration: stops_src_dest.src.duration,
         start_address: stops_src_dest.src.name,
