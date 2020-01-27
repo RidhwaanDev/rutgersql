@@ -70,10 +70,9 @@ const getDirections = async args => {
         end_address: stops_src_dest.dest.name,
         vehicles: vres,
     };
-}
+};
 
-//TODO need to return more than one stop in case that stop has no vehicles in which case we can discard that.
-const distanceToNearbyStop = async user_pos => {
+async function distanceToNearbyStop(user_pos) {
     const stops = await nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null);
     if(!stops){
         throw new Error("Error in getting nearbyStops in distanceToNearbyStop");
@@ -81,22 +80,21 @@ const distanceToNearbyStop = async user_pos => {
     //get directions from the user to the three stops, lets do one for now.
     stops.slice(0,4);
     const stop_pos = new Position(stops[0].location.lat,stops[0].location.lng);
-    const data = await directions({user_pos: user_pos.toString(), nearest_stop_pos: stop_pos.toString()});
-
-    if (!data) {
-        throw new Error("res is  null or res is undefined");
-    }
-    const distance = data.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
-    const duration = data.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
-    return {name: stops[0].name, stop_id: stops[0].stop_id, distance, duration};
-
+    const directions_args = {user_pos: user_pos.toString(), nearest_stop_pos: stop_pos.toString()};
+    directions(directions_args,( result ) => {
+        if (!result) {
+            throw new Error("res is  null or res is undefined");
+        }
+        log(result.then(it => log(it)));
+        const distance = result.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
+        const duration = result.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
+        return {name: stops[0].name, stop_id: stops[0].stop_id, distance, duration};
+    });
 }
-
 // directions API
-const directions = async (args) => {
-    return await queryMapsAPI("directions", args);
-};
-
+function directions(args, callback){
+   callback(queryMapsAPI("directions",args));
+}
 
 // distance matrix API
 const distance = async args => {};

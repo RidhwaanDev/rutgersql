@@ -69,18 +69,18 @@ const queryAPI = async (URL, args, unnest = false) => {
         log(error.config);
     }
 };
-const queryMapsAPI = async (api_name, args) => {
+function queryMapsAPI(api_name, args){
     const gmapclient = gmap.createClient({
         key: config.GMAP_API_KEY,
     });
 
     switch(api_name){
         case "directions" :
-            await gmapclient.directions({
+            return gmapclient.directions({
                     origin : args.user_pos,
                     destination : args.nearest_stop_pos,
                     mode   : "walking",
-                } , (err, res) => {
+                } , async (err, res) => {
                     if(res.status !== 200 || res.json.status !== 'OK') {
                         throw new Error(JSON.stringify(res, null, 2));
                     } else {
@@ -90,11 +90,13 @@ const queryMapsAPI = async (api_name, args) => {
             );
             break;
         case "distance":
+            //TODO
             break;
         case "geocode":
+            //TODO
             break;
     }
-};
+}
 
 module.exports = {
     queryAPI,
