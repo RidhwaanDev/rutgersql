@@ -28,7 +28,6 @@ const getDirections = async args => {
     const src = await distanceToNearbyStop(user_pos);
     // get the closest stop to the dest
     const dest = await distanceToNearbyStop(dest_pos);
-
     if (!src || !dest) {
         throw new Error("could not get src and dst")
     }
@@ -77,23 +76,16 @@ async function distanceToNearbyStop(user_pos){
 
     const directions_args = {user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()};
 
-   //  return directions(directions_args, (res) => {
-   //      if(res == null || res == undefined) {
-   //          throw new Error("res is  null or res is undefined");
-   //      }
-   //      // regex explanation: distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
-   //      const distance = res.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
-   //      const duration = res.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
-   //      const result = {name: stops[0].name, stop_id: stops[0].stop_id, distance, duration};
-   //      return result;
-   //   });
-    log(await queryMapsAPI("directions",directions_args));
+    const res = await queryMapsAPI("directions", directions_args);
+    if(!res) {
+        throw new Error("res is  null or res is undefined");
+    }
+    // regex explanation: distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
+    const distance = res.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
+    const duration = res.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
+    const result = {name: stops[0].name, stop_id: stops[0].stop_id, distance, duration};
+    return result;
 
-}
-
-// directions API
-function directions(args, callback){
-    queryMapsAPI("directions",args, callback);
 }
 
 // distance matrix API

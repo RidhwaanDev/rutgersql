@@ -69,28 +69,27 @@ const queryAPI = async (URL, args, unnest = false) => {
         log(error.config);
     }
 };
-async function queryMapsAPI(api_name, args){
+function queryMapsAPI(api_name, args){
     const gmapclient = gmap.createClient({
         key: config.GMAP_API_KEY,
     });
 
     switch(api_name){
         case "directions" :
-            (async () => {
-                return await gmapclient.directions({
-                        origin : args.user_pos,
-                        destination : args.nearest_stop_pos,
-                        mode   : "walking",
-                    } , (err, res) => {
-                        if(res.status !== 200 || res.json.status !== 'OK') {
+            return new Promise((resolve,reject) => {
+                gmapclient.directions({
+                        origin: args.user_pos,
+                        destination: args.nearest_stop_pos,
+                        mode: "walking",
+                    }, (err, res) => {
+                        if (res.status !== 200 || res.json.status !== 'OK') {
                             throw new Error(JSON.stringify(res, null, 2));
                         } else {
-                            return res;
+                            resolve(res);
                         }
                     },
                 );
-            })();
-
+            });
             break;
         case "distance":
             //TODO
