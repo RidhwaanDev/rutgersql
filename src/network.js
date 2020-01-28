@@ -6,12 +6,12 @@ const chalk = require('chalk'); // fun colors for the terminal.
 const log = console.log;
 const error = console.error;
 
-const get = async url => {
-  axios.getUri(url)
-      .then(res => {
-        log(res);
-      });
-};
+async function get(url){
+    axios.getUri(url)
+        .then(res => {
+            log(res);
+        });
+}
 
 // query Transloc asAPI
 const queryAPI = async (URL, args, unnest = false) => {
@@ -69,25 +69,28 @@ const queryAPI = async (URL, args, unnest = false) => {
         log(error.config);
     }
 };
-function queryMapsAPI(api_name, args){
+async function queryMapsAPI(api_name, args){
     const gmapclient = gmap.createClient({
         key: config.GMAP_API_KEY,
     });
 
     switch(api_name){
         case "directions" :
-            return gmapclient.directions({
-                    origin : args.user_pos,
-                    destination : args.nearest_stop_pos,
-                    mode   : "walking",
-                } , async (err, res) => {
-                    if(res.status !== 200 || res.json.status !== 'OK') {
-                        throw new Error(JSON.stringify(res, null, 2));
-                    } else {
-                        return res;
-                    }
-                },
-            );
+            (async () => {
+                return await gmapclient.directions({
+                        origin : args.user_pos,
+                        destination : args.nearest_stop_pos,
+                        mode   : "walking",
+                    } , (err, res) => {
+                        if(res.status !== 200 || res.json.status !== 'OK') {
+                            throw new Error(JSON.stringify(res, null, 2));
+                        } else {
+                            return res;
+                        }
+                    },
+                );
+            })();
+
             break;
         case "distance":
             //TODO

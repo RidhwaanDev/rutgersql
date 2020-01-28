@@ -15,12 +15,10 @@ const Directions = {
 
 const log = console.log;
 
-
-
 // return segments of a route only from srcpos to destpos
-const segmentsAB = async (srcpos, destpos ) => {
+async function segmentsAB(srcpos, destpos){
 
-};
+}
 
 const getDirections = async args => {
     // user position, and final destination pos
@@ -71,36 +69,38 @@ const getDirections = async args => {
         vehicles: vres,
     };
 };
-
-async function distanceToNearbyStop(user_pos) {
+async function distanceToNearbyStop(user_pos){
     const stops = await nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null);
-    if(!stops){
-        throw new Error("Error in getting nearbyStops in distanceToNearbyStop");
-    }
     //get directions from the user to the three stops, lets do one for now.
     stops.slice(0,4);
     const stop_pos = new Position(stops[0].location.lat,stops[0].location.lng);
-    const directions_args = {user_pos: user_pos.toString(), nearest_stop_pos: stop_pos.toString()};
-    directions(directions_args,( result ) => {
-        if (!result) {
-            throw new Error("res is  null or res is undefined");
-        }
-        log(result.then(it => log(it)));
-        const distance = result.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
-        const duration = result.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
-        return {name: stops[0].name, stop_id: stops[0].stop_id, distance, duration};
-    });
+
+    const directions_args = {user_pos : user_pos.toString(), nearest_stop_pos: stop_pos.toString()};
+
+   //  return directions(directions_args, (res) => {
+   //      if(res == null || res == undefined) {
+   //          throw new Error("res is  null or res is undefined");
+   //      }
+   //      // regex explanation: distance and duration but remove any text characters. So 3 miles -> 3 , 5 min -> 5
+   //      const distance = res.json.routes[0].legs[0].distance.text; // .replace(/\D/g,'');
+   //      const duration = res.json.routes[0].legs[0].duration.text; //  .replace(/\D/g,'');
+   //      const result = {name: stops[0].name, stop_id: stops[0].stop_id, distance, duration};
+   //      return result;
+   //   });
+    log(await queryMapsAPI("directions",directions_args));
+
 }
+
 // directions API
 function directions(args, callback){
-   callback(queryMapsAPI("directions",args));
+    queryMapsAPI("directions",args, callback);
 }
 
 // distance matrix API
-const distance = async args => {};
+async function distance (args){}
 // travel time from one stop to another stop via bus
-const travelTime = async args => {};
+async function travelTime(args){}
 // get lat,lng from address
-const geocode = async args => {};
+async function geocode(args){}
 
 module.exports = Directions;
