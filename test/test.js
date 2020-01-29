@@ -1,7 +1,7 @@
 require('dotenv').config();
 const assert = require('assert');
-const {baseResolvers} = require('../src/resolvers/base');
-const {complexResolvers} = require('../src/resolvers/complex');
+const {baseResolvers} = require('../src/resolvers/transloc/transloc_base');
+const {complexResolvers} = require('../src/resolvers/transloc/transloc_complex');
 const log = console.log;
 
 // test base resolvers

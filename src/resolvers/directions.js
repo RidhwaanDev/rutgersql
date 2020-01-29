@@ -1,6 +1,6 @@
 // resolvers for directions and other
 const {queryMapsAPI} = require('../network');
-const {nearbyStops, stopsWithRoutes} = require('./complex').complexResolvers;
+const {nearbyStops, stopsWithRoutes} = require('./transloc/transloc_complex').complexResolvers;
 
 // TODO simplify Position object
 const Position = require('../structures/position');
@@ -12,15 +12,9 @@ const Directions = {
         return getDirections(args);
     },
 };
-
 const log = console.log;
 
-// return segments of a route only from srcpos to destpos
-async function segmentsAB(srcpos, destpos){
-
-}
-
-const getDirections = async args => {
+async function getDirections(args){
     // user position, and final destination pos
     const user_pos = new Position(args.user_lat, args.user_lng);
     const dest_pos = new Position(args.dest_lat, args.dest_lng);
@@ -54,6 +48,7 @@ const getDirections = async args => {
             }
         });
     });
+
     // sort by arrival estimates. someone double check if its already sorted
     vres.sort((a, b) => {
         return a.arrival_estimates[0].arrival_at - b.arrival_estimates[0].arrival_at;

@@ -1,23 +1,22 @@
-// base resolvers that match the API requests on openapi: https://rapidapi.com/transloc/api/openapi-1-2?7
-const config = require('../config');
-const chalk = require('chalk');
-const {queryAPI,queryMapsAPI} = require('../network');
+// transloc_base resolvers that match the API requests on openapi: https://rapidapi.com/transloc/api/openapi-1-2?7
+const config = require('../../config');
+const {queryAPI} = require('../../network');
 const log = console.log;
 
-const base = {
-    routes:    (args,context) => {
+const transloc_base = {
+    routes:    (args) => {
         return getRoutes(args);
     },
-    arrivals:  (args,context) => {
+    arrivals:  (args) => {
         return getArrivals(args);
     },
-    segments:  (args,context) => {
+    segments:  (args) => {
         return getSegments(args);
     },
-    vehicles:  (args,context) => {
+    vehicles:  (args) => {
         return getVehicles(args);
     },
-    stops:     (args,context) => {
+    stops:     (args) => {
         return getStops(args);
     },
 
@@ -30,7 +29,7 @@ const getVehicles = async () => {
         // if routes is undefined set key as null otherwise join it ( changes it from routes : [a,b,c] to routes : "a,b,c". ( Array -> Single String basically)
         // Also this line might only be needed for Summer routes because the API behavior was different in Summer 2019. Will need to test.
         // routes : Object.is(args['routes'], undefined) ? null : args['routes'].join(',')
-         geo_area : config.geo_area
+        geo_area : config.geo_area
 
     };
     return await queryAPI(URL,my_params,true);
@@ -67,7 +66,7 @@ const getSegments = async args => {
 };
 
 module.exports = {
-    baseResolvers: base,
+    baseResolvers: transloc_base,
     getStops,
     getSegments,
     getRoutes,

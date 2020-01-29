@@ -6,19 +6,14 @@ const chalk = require('chalk'); // fun colors for the terminal.
 const log = console.log;
 const error = console.error;
 
-async function get(url){
-    axios.getUri(url)
-        .then(res => {
-            log(res);
-        });
-}
-
-// query Transloc asAPI
-const queryAPI = async (URL, args, unnest = false) => {
+// query Transloc API
+async function queryAPI (URL, args, unnest = false){
+    if(!config.HEADERS["X-RapidAPI-Key"]){
+       log("Missing X-RapidAPI-Key. Create .env file with required keys");
+    }
     let my_params = {
         'agencies': '1323',
     };
-
     if (!URL.includes("segments")) {
         my_params['geo_area'] = config.geo_area;
     } else {
@@ -70,6 +65,11 @@ const queryAPI = async (URL, args, unnest = false) => {
     }
 };
 function queryMapsAPI(api_name, args){
+
+    if(!config.GMAP_API_KEY){
+        log("Missing Google Maps API key. Create .env file with required Keys");
+    }
+
     const gmapclient = gmap.createClient({
         key: config.GMAP_API_KEY,
     });
@@ -103,5 +103,4 @@ function queryMapsAPI(api_name, args){
 module.exports = {
     queryAPI,
     queryMapsAPI,
-    get,
 };

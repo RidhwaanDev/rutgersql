@@ -1,30 +1,29 @@
-// complex resolvers that call the API multiple time times to do fancy stuff. Depends on base
-const config = require('../config');
-const Position = require('../structures/position');
-const globalCache = require('../structures/cache');
+const config = require('../../config');
+const Position = require('../../structures/position');
+const globalCache = require('../../structures/cache');
 const log = console.log;
-const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./base');
+const {getStops, getRoutes, getSegments, getVehicles, getArrivals} = require('./transloc_base');
 
-const complex = {
-    vehiclesByName : (args,context) => {
+const api = {
+    vehiclesByName : (args) => {
         return getVehiclesByName(args);
     },
-    segmentsByName : (args,context) => {
+    segmentsByName : (args) => {
         return getSegmentsByName(args);
     },
-    routesByName: (args,context) => {
+    routesByName: (args) => {
         return getRoutesByName(args);
     },
-    stopsWithRoutes : (args,context) => {
+    stopsWithRoutes : (args) => {
         return getStopsWithRoutes(args);
     },
-    nearbyStops : (args,context) => {
+    nearbyStops : (args) => {
         return getNearbyStops(args);
     },
 };
 
 // take in lat,lng and returns the nearest stops
-const getNearbyStops = async (args) => {
+async function getNearbyStops(args){
     // ths location of the person
     const userPos = new Position(args['lat'],args['lng']);
     const res = await getStops(null);
@@ -71,10 +70,10 @@ const getNearbyStops = async (args) => {
     }
 
     return stops;
-};
+}
+
 // takes the route name like 'A' or 'LX' and gets the segments.
-// TODO need to fix. gives segments for any input. Why???
-const getSegmentsByName = async (args) => {
+async function getSegmentsByName(args){
     // get route_name from args
     const route_name = args['name'];
     const response = await getRoutes(null);
@@ -92,7 +91,7 @@ const getSegmentsByName = async (args) => {
 };
 
 // takes the route name like 'A' or 'LX' and gets all the associated vehicles.
-const getVehiclesByName = async (args) => {
+async function getVehiclesByName(args){
     // get route_name from args
     const route_name = args['name'];
     const routes = await getRoutes(null);
@@ -105,10 +104,11 @@ const getVehiclesByName = async (args) => {
     let v = vehicles['data'];
     const vehicles_filtered = v.filter(it => map[it.route_id] === route_name);
     return vehicles_filtered;
-};
+}
 
+// TODO this endpoint is way too slow. needs to be much faster. 1.5 seconds
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, then get stops for the routes;
-const getRoutesByName = async (args) => {
+async function getRoutesByName (args){
     const rt_name = args['name'];
     const response = await getRoutes(null);
     const res = response['data'];
@@ -194,7 +194,7 @@ const getRoutesByName = async (args) => {
 // First get all the routes that stop at that stop.
 // Then from all of those routes, get all the vehicles and sort by the arrival time to that stop.
 
-const getStopsWithRoutes = async () => {
+async function getStopsWithRoutes(){
     /**
      *  get all stops [stops]
      *  get all routes [routes]
@@ -211,8 +211,9 @@ const getStopsWithRoutes = async () => {
 
     let stopid_to_routeid = {};
 
-    stops.forEach(s => {
-        routes.forEach(r => {
+    log(stops);
+    stops['data'].forEach(s => {
+        routes['data'].forEach(r => {
             const route_stops = r['stops'];
             const rt_name = r['long_name'];
             const filtered = route_stops.filter(stop => stop === s['stop_id']);
@@ -229,7 +230,7 @@ const getStopsWithRoutes = async () => {
 
     // for each stop
     Object.keys(stopid_to_routeid).forEach( stop_id => {
-        const buses = vehicles.filter(b => stopid_to_routeid[stop_id].includes(b['route_id']));
+        const buses = vehicles['data'].filter(b => stopid_to_routeid[stop_id].includes(b['route_id']));
         // buses is all the vehicles coming to the stop.
         buses.sort((a,b) => {
             return (a['arrival_estimates'])['arrival_at'] - (b['arrival_estimates'])['arrival_at']
@@ -237,14 +238,13 @@ const getStopsWithRoutes = async () => {
         stopid_to_routeid[stop_id] = buses;
     });
     // now add all buses to their respective stops in the stops object
-    stops.forEach(stop => {
+    stops['data'].forEach(stop => {
         stop['vehicles'] = stopid_to_routeid[stop['stop_id']];
     });
 
     return stops;
 };
 
-
 module.exports = {
-    complexResolvers: complex
+    complexResolvers: api
 };
