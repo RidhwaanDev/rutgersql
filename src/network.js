@@ -9,7 +9,7 @@ const error = console.error;
 // query Transloc API
 async function queryAPI (URL, args, unnest = false){
     if(!config.HEADERS["X-RapidAPI-Key"]){
-       log("Missing X-RapidAPI-Key. Create .env file with required keys");
+        log("Missing X-RapidAPI-Key. Create .env file with required keys");
     }
     let my_params = {
         'agencies': '1323',
@@ -63,7 +63,8 @@ async function queryAPI (URL, args, unnest = false){
         }
         log(error.config);
     }
-};
+}
+
 function queryMapsAPI(api_name, args){
 
     if(!config.GMAP_API_KEY){

@@ -62,7 +62,8 @@ async function getDirections(args){
         end_address: stops_src_dest.dest.name,
         vehicles: vres,
     };
-};
+}
+
 async function distanceToNearbyStop(user_pos){
     const stops = await nearbyStops({lat : user_pos.lat, lng : user_pos.lng},null);
     //get directions from the user to the three stops, lets do one for now.

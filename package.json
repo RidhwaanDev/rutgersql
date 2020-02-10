@@ -23,7 +23,8 @@
     "https": "^1.0.0",
     "mariadb": "^2.1.4",
     "mocha": "^6.2.2",
-    "node-cache": "^4.2.1"
+    "node-cache": "^4.2.1",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
