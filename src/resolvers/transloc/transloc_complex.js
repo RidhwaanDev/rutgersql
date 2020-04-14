@@ -108,13 +108,42 @@ async function getVehiclesByName(args){
 
 // TODO this endpoint is way too slow. needs to be much faster. 1.5 seconds
 // get routes, then get vehicles then sort vehicles by shortest arrival time then combine both into one object, then get stops for the routes;
+async function getRoutesAll(){
+    const response = await getRoutes(null);
+    let res = response['data'];
+    res = res.filter((route) => { return route['is_active'] === true});
+    res = res.filter((route) => {
+        // due to covid19 routes no longer active
+        // remove routes from inactive routes. Should be dynamically checked with another API call.
+        return ['Route REXB', 'Route REXL', 'Route A', 'Route F', 'Route C', 'Route B' ,'Route H', 'Route LX', 'Route EE']
+            .indexOf(route['long_name']) === -1;
+    })
+
+    let allRoutes = [];
+
+    for(let i = 0; i < res.length; i++){
+        console.log("calling getRoutesByName " + res.length + " times");
+        const route = await getRoutesByName({name : res[i]['long_name']});
+        allRoutes.push(route);
+    }
+    allRoutes = allRoutes.filter((route) => {return route['vehicles'].length > 0});
+    return allRoutes;
+}
+
 async function getRoutesByName (args){
-    const rt_name = args['name'];
+    const rt_name = args['name'] || null;
     const response = await getRoutes(null);
     const res = response['data'];
-    const route_obj = res.filter((it) => (it.long_name === rt_name));
-    const rt_id = (route_obj['0']).route_id;
+    let route_obj = null;
+    if(rt_name){
+        route_obj = res.filter((it) => (it.long_name === rt_name));
+    } else {
+       const rts = await getRoutesAll();
+       console.log(rts);
+       return rts;
+    }
 
+    const rt_id = (route_obj['0']).route_id;
     const vehicles = await getVehiclesByName(args);
     // sort the arrivals of each vehicle
     vehicles.forEach((vehicle) => {

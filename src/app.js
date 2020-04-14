@@ -8,12 +8,11 @@ const root  = require( './rootresolver');
 const app = express();
 const SocketAPI = require('./socketio');
 const http = require('http').Server(express); // socket.io server
-const io = require('socket.io')(http)
+const io = require('socket.io')(http);
 
 // // this port is used for socket.io testing
 const port = 3000;
-const socket = new SocketAPI(http,port, root);
-
+const socket = new SocketAPI(http,io, port, root);
 
 app.use('/', graphqlHTTP({
     schema: schema,  // Must be provided

@@ -43,7 +43,6 @@ const getStops = async args => {
 
 // Needs to be unnested.
 const getRoutes = async args => {
-    // log(chalk.magenta("getting routes"));
     const URL = config.API_URL + '/routes.json';
     return await queryAPI(URL,args,true);
 };

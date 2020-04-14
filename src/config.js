@@ -1,5 +1,6 @@
 module.exports = {
     API_URL: 'https://transloc-api-1-2.p.rapidapi.com',
+    SOCKET_URL : "",
     geo_area: '40.506831,-74.456645|15000',
     stop_id_test : '4229492',
     route_h : 4012628,
