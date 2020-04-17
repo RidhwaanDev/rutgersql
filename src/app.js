@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const express  = require('express');
-const chalk  = require('chalk');
 const graphqlHTTP  = require("express-graphql"); // graphql server
 const schema  = require('./schema');
 const root  = require( './rootresolver');

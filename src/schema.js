@@ -15,7 +15,15 @@ module.exports = buildSchema(`
 		stopsWithRoutes : [StopsWithRoutesResult]
 		nearbyStops(lat1 : Float!, lon1: Float!) : [Stop] 
         directions(user_lat: Float!, user_lng: Float!, dest_lat: Float!, dest_lng: Float!) : DirectionResult
-	}
+        alerts : [AlertsResult]
+    }
+    
+    type AlertsResult {
+        title : [String]
+        guid : [String]
+        pubDate : [String]
+        description : [String]
+    }
     
     type DirectionResult {	
       distance : String,

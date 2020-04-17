@@ -1,7 +1,9 @@
 class SocketAPI {
-    constructor(server, io, port, root, redis){
-        // will cache api results in local redis object
-        this.redis = redis;
+    // root contains all the api endpoints/ resolvers.
+    constructor(server, io, port, root, cache){
+        // will cache api results 
+        this.cache = cache;
+
         server.listen(port , () => {
             console.log('socketio listening  http://127.0.0.1:' + port)
         });
@@ -12,6 +14,15 @@ class SocketAPI {
                     const data = await root.routesByName({});
                     socket.emit("data", data);
             }, 1000 * 7);
+
+            io.on('alerts', async (socket) => {
+                setInterval(async () => {
+                    const data = await root.alerts();
+                    socket.emit("alerts", data);
+            }, 1000 * 7);
+
+
+            });
 
             io.on('routes', (socket) => {
                 setInterval(() => {

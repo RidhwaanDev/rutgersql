@@ -1,10 +1,32 @@
 // get Transloc Alerts
 const config = require('../config');
 const network = require('../network');
+const axios = require('axios');
+const xml2js = require('xml2js');
 
-module.exports.getAnnoucements = async () => {
-};
 
+const alerts = {
+    alerts: () => {
+        return getAlerts().then(res => { return res});
+    }
+}
+
+async function getAlerts() {
+    const data = await axios.get(config.TRANSLOC_ANNOUCEMENTS);
+    const parser = xml2js.Parser();
+    return new Promise((resolve, reject) => {
+        parser.parseString(data['data'].toString(), (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                const items = result.rss.channel[0].item;
+                resolve(result.rss.channel[0].item);
+            }
+        })
+    });
+}
+
+module.exports = alerts;
 
 /*
 rutgers.transloc.com Announcements for the real-time transit system at RUTGERS. 2019-12-02T14:57:57.803667-05:00 http://rutgers.transloc.com/announcements/10027647 2019-12-02T00:00:00 Significant Delays due to Weather

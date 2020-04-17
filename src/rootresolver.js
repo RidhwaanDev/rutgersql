@@ -2,7 +2,8 @@
 const {baseResolvers} = require('./resolvers/transloc/transloc_base');
 const {complexResolvers} = require('./resolvers/transloc/transloc_complex');
 const gmapResolvers = require('./resolvers/directions');
-const resolvers = {...baseResolvers, ...complexResolvers, ...gmapResolvers};
+const alerts = require('./resolvers/alerts');
+const resolvers = {...baseResolvers, ...complexResolvers, ...gmapResolvers, ...alerts};
 
 module.exports = resolvers;
 
