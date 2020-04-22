@@ -122,7 +122,7 @@ async function getRoutesAll(){
     let allRoutes = [];
 
     for(let i = 0; i < res.length; i++){
-        console.log("calling getRoutesByName " + res.length + " times");
+        // console.log("calling getRoutesByName " + res.length + " times");
         const route = await getRoutesByName({name : res[i]['long_name']});
         allRoutes.push(route);
     }
