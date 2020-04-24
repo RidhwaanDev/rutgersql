@@ -1,12 +1,24 @@
 # rutgersql
 A GraphQL API for Rutgers Bus.
 
-## Local testing
+## Run server locally
 
 ```
 git clone https://github.com/RidhwaanDev/rutgersql.git
 npm i
 npm start
+```
+
+# Run mocha tests
+```
+npm test
+```
+
+# Run load tests (artillery.io)
+```
+npm install -g artillery ( might need to run as sudo, also omitting -g might not work)
+artillery run graphql_loadtest.yml (load test the graphQL server)
+artillery run socket_io_loadtest.yml (load test socket.io)
 ```
 A server for socket.io and graphQL should start up. 
 
