@@ -22,6 +22,20 @@ app.use('/', graphqlHTTP({
     graphiql: true,  // Enable GraphiQL when server endpoint is accessed in browser
 }));
 
+String.prototype.hashCode = function() {
+    var hash = 0;
+    if (this.length == 0) {
+        return hash;
+    }
+    for (var i = 0; i < this.length; i++) {
+        var char = this.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+
 // if heap usage increases after five garbage collections then we probably have a leak.
 // for our purposes this should be all we need in terms of memory profiling. As long as there is no growing leaks, we should be good to go.
 memwatch.on('leak', (info) => {
@@ -33,8 +47,10 @@ memwatch.on('leak', (info) => {
 
 // called on every GC event
 memwatch.on('stats', (stats) => {
-    console.log(stats);
+   // console.log(stats);
  });
 
 
 module.exports = app;
+
+//16325
