@@ -1,6 +1,9 @@
 # rutgersql
 A GraphQL API for Rutgers Bus.
 
+July 14, 2021 Update: Route names have changed so this code will most likely not work. I am not sure what else has changed in the Transloc API. But 
+one thing is for sure, I will never touch this project again. RIP.
+
 ## Run server locally
 
 ```
