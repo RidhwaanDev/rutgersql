@@ -13,7 +13,7 @@
   "dependencies": {
     "@google/maps": "^1.0.1",
     "aws-serverless-express": "^3.3.6",
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "chai": "^4.2.0",
     "chalk": "^2.4.2",
     "dotenv": "^8.1.0",
